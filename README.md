@@ -1,5 +1,5 @@
 # COP5556-CourseProject_CompilerImplementation
-An implementation of a compiler for a small programming language, which is a course project of COP5556 Programming Language Principles. 
+An implementation of a compiler for a small programming language. It is a course project of COP5556 Programming Language Principles. 
 
 ## Language: 
 Java
