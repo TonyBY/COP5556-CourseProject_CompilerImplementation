@@ -316,6 +316,8 @@ class ScannerTest {
 		assertEquals("4", scanner.getText(t3));
 		Token t4 = checkNext(scanner, IDENT, 10, 5, 2, 2);
 		assertEquals("ab921", scanner.getText(t4));
+		Exception exception = assertThrows(LexicalException.class, () -> {new Scanner("99999999999999999999").scan();});
+		show(exception);
 		checkNextIsEOF(scanner);
 	}
 

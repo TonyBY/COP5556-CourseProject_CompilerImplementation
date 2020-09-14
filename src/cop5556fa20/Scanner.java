@@ -466,7 +466,15 @@ public class Scanner {
 						}
 
 						default -> {
-							tokens.add(new Token(Kind.INTLIT, startPos, pos - startPos, line, startPosInLine));
+							Token t = new Token(Kind.INTLIT, startPos, pos - startPos, line, startPosInLine);
+							tokens.add(t);
+							String tokenText = getText(t);
+							try {
+								Integer.parseInt(tokenText);
+							}
+							catch (NumberFormatException e) {
+								throw new LexicalException("The integer literal provided is out of the range of a Java int", t.pos());
+							}
 							state = State.START;
 						}
 					}
@@ -566,11 +574,16 @@ public class Scanner {
 	 */
 	public int intVal(Token t) throws LexicalException {
 		/* IMPLEMENT THIS */
+		String tokenText = getText(t);
 		if (t.kind == Kind.INTLIT) {
-			String tokenText = getText(t);
-			return Integer.parseInt(tokenText);
+			try {
+				return Integer.parseInt(tokenText);
+			}
+			catch (NumberFormatException e) {
+				throw new LexicalException("The integer literal provided is out of the range of a Java int", t.pos());
+			}
 		}else if (t.kind == Kind.CONST){
-			return constants.get(getText(t));
+			return constants.get(tokenText);
 		}
 		else{
 			throw new LexicalException("This token's kind is: " + t.kind + ", which should be INTLIT or CONST instead.", t.pos());
