@@ -14,11 +14,10 @@
 
 package cop5556fa20;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class Scanner {
-	
+
 	@SuppressWarnings("preview")
 	public record Token(
 		Kind kind,
@@ -52,6 +51,18 @@ public class Scanner {
 	    AT/* @ */, HASH /* # */, RARROW/* -> */, LARROW/* <- */, LPAREN/* ( */, RPAREN/* ) */, 
 		LSQUARE/* [ */, RSQUARE/* ] */, LPIXEL /* << */, RPIXEL /* >> */,  SEMI/* ; */, COMMA/* , */,  EOF
 	}
+
+
+	/**
+	 * Start in the START state
+	 * State state = START;
+	 * Read a char and go to the indicated state
+	 * When a token has been recognized, create a Token and add to tokens.
+	 * Repeat until no more input.
+	 */
+	private enum State {
+		START, HAVE_EQUAL, DIGITS, IDENT_PART, HAVE_LT, HAVE_GT, HAVE_EXCL, HAVE_MINUS, HAVE_CR, HAVE_SLASH, COMMENT, HAVE_DOUBLE_QUOT
+	}
 	
 
 	/**
@@ -64,7 +75,11 @@ public class Scanner {
 	 */
 	public String getText(Token token) {
 		/* IMPLEMENT THIS */
-		return null;
+		if (token.kind() == Kind.STRINGLIT) {
+			return String.copyValueOf(chars, token.pos() + 1 , token.length - 2);
+		} else {
+			return String.copyValueOf(chars, token.pos(), token.length);
+		}
 	}
 	
 	
@@ -93,17 +108,23 @@ public class Scanner {
 	 * The list of tokens created by the scan method.
 	 */
 	private final ArrayList<Token> tokens = new ArrayList<Token>();
-	
+
+	private final char[] chars; //holds characters with 0 at the end.
 
 	/**
 	 * position of the next token to be returned by a call to nextToken
 	 */
 	private int nextTokenPos = 0;
 
+	static final char EOFchar = 0;
+
 	Scanner(String inputString) {
 		/* IMPLEMENT THIS */
+		int numChars = inputString.length();
+		this.chars = Arrays.copyOf(inputString.toCharArray(), numChars + 1);
+		// input char array terminated with EOFchar for convenience
+		chars[numChars] = EOFchar;
 	}
-	
 
 	
 	public Scanner scan() throws LexicalException {
@@ -111,9 +132,430 @@ public class Scanner {
 		int pos = 0;
 		int line = 1;
 		int posInLine = 1;
+		int startPos = pos;
+		int startPosInLine = posInLine;
+//		tokens.add(new Token(Kind.EOF, pos, 0, line, posInLine));
+
+		State state = State.START;
+		//initialization
+		while (pos < chars.length){ // read all chars
+			char ch = chars[pos]; // get current char
+			switch (state) {
+				case START -> {
+					startPos = pos;
+					switch (ch){
+						case ' ', '\t', '\f' -> {
+							pos++;
+							posInLine++;
+						}
+						case '\n' -> {// NEED TO HANDLE \r
+							pos++;
+							line++;
+							posInLine = 1; //Problem in start code! posInLine here should be 1 instead of 0.
+						}
+						case '\r' -> {
+							startPosInLine = posInLine;
+							pos++;
+							posInLine++;
+							state = State.HAVE_CR;
+						}
+						case '0' -> {
+							tokens.add(new Token(Kind.INTLIT, startPos, 1, line, posInLine));
+							pos++;
+							posInLine++;
+						}
+						case '(' -> {
+							tokens.add(new Token(Kind.LPAREN, startPos, 1, line, posInLine));
+							pos++;
+							posInLine++;
+						}
+						case ')' -> {
+							tokens.add(new Token(Kind.RPAREN, startPos, 1, line, posInLine));
+							pos++;
+							posInLine++;
+						}
+						case '[' -> {
+							tokens.add(new Token(Kind.LSQUARE, startPos, 1, line, posInLine));
+							pos++;
+							posInLine++;
+						}
+						case ']' -> {
+							tokens.add(new Token(Kind.RSQUARE, startPos, 1, line, posInLine));
+							pos++;
+							posInLine++;
+						}
+						case ';' -> {
+							tokens.add(new Token(Kind.SEMI, startPos, 1, line, posInLine));
+							pos++;
+							posInLine++;
+						}
+						case ',' -> {
+							tokens.add(new Token(Kind.COMMA, startPos, 1, line, posInLine));
+							pos++;
+							posInLine++;
+						}
+						case '<' -> {
+							startPosInLine = posInLine;
+							pos++;
+							posInLine++;
+							state = State.HAVE_LT;
+						}
+						case '>' -> {
+							startPosInLine = posInLine;
+							pos++;
+							posInLine++;
+							state = State.HAVE_GT;
+						}
+						case '!' -> {
+							startPosInLine = posInLine;
+							pos++;
+							posInLine++;
+							state = State.HAVE_EXCL;
+						}
+						case '?' -> {
+							tokens.add(new Token(Kind.Q, startPos, 1, line, posInLine));
+							pos++;
+							posInLine++;
+						}
+						case ':' -> {
+							tokens.add(new Token(Kind.COLON, startPos, 1, line, posInLine));
+							pos++;
+							posInLine++;
+						}
+						case '=' -> {
+							startPosInLine = posInLine;
+							pos++;
+							posInLine++;
+							state = State.HAVE_EQUAL;
+						}
+						case '+' -> {
+							tokens.add(new Token(Kind.PLUS, startPos, 1, line, posInLine));
+							pos++;
+							posInLine++;
+						}
+						case '-' -> {
+							startPosInLine = posInLine;
+							pos++;
+							posInLine++;
+							state = State.HAVE_MINUS;
+						}
+						case '*' -> {
+							tokens.add(new Token(Kind.STAR, startPos, 1, line, posInLine));
+							pos++;
+							posInLine++;
+						}
+						case '/' -> {
+							startPosInLine = posInLine;
+							pos++;
+							posInLine++;
+							state = State.HAVE_SLASH;
+						}
+						case '%' -> {
+							tokens.add(new Token(Kind.MOD, startPos, 1, line, posInLine));
+							pos++;
+							posInLine++;
+						}
+						case '@' -> {
+							tokens.add(new Token(Kind.AT, startPos, 1, line, posInLine));
+							pos++;
+							posInLine++;
+						}
+						case '#' -> {
+							tokens.add(new Token(Kind.HASH, startPos, 1, line, posInLine));
+							pos++;
+							posInLine++;
+						}
+						case '&' -> {
+							tokens.add(new Token(Kind.AND, startPos, 1, line, posInLine));
+							pos++;
+							posInLine++;
+						}
+						case '|' -> {
+							tokens.add(new Token(Kind.OR, startPos, 1, line, posInLine));
+							pos++;
+							posInLine++;
+						}
+						case '"' -> {
+							startPosInLine = posInLine;
+							pos++;
+							posInLine++;
+							state = State.HAVE_DOUBLE_QUOT;
+						}
+						case '1', '2', '3', '4', '5', '6', '7', '8', '9' -> {
+							startPosInLine = posInLine;
+							pos++;
+							posInLine++;
+							state = State.DIGITS;
+						}
+						default -> { //a..z, A..Z, _, $
+							startPosInLine = posInLine;
+							if (Character.isJavaIdentifierStart(ch)){
+								pos++;
+								posInLine++;
+								state = State.IDENT_PART;
+							}
+							else{
+								if(ch != EOFchar){
+									throw new LexicalException("Line: " + line + ", posInLine: " + posInLine + ", Illegal character: " + ch, pos);
+								}
+								pos++;
+								posInLine++; // Problem in start code! posInLine should increase as well.
+							}
+						}
+					}
+				}
+				case HAVE_DOUBLE_QUOT -> {
+					switch (ch) {
+						case '"' -> {
+							tokens.add(new Token(Kind.STRINGLIT, startPos, 1 + pos - startPos, line, startPosInLine));
+							pos++;
+							posInLine++;
+							state = State.START;
+						}
+						case EOFchar -> {
+							throw new LexicalException("Failed to close a string literal", pos);
+						}
+						default -> {
+							pos++;
+							posInLine++;
+						}
+					}
+				}
+				case HAVE_SLASH -> {
+					switch (ch) {
+						case '/' -> {
+							startPosInLine = posInLine;
+							pos++;
+							posInLine++;
+							state = State.COMMENT;
+						}
+						default -> {
+							tokens.add(new Token(Kind.DIV, startPos, 1, line, startPosInLine));
+							state = State.START;
+						}
+					}
+				}
+				case COMMENT -> {
+					switch (ch) {
+						case '\n' -> {
+							pos++;
+							line++;
+							posInLine = 1;
+							state = State.START;
+						}
+						case '\r' -> {
+							startPosInLine = posInLine;
+							pos++;
+							posInLine++;
+							state = State.HAVE_CR;
+						}
+						default -> {
+							pos++;
+							posInLine++;
+						}
+					}
+				}
+				case HAVE_CR -> {
+					switch (ch) {
+						case '\n' -> {
+							pos++;
+							line++;
+							posInLine = 1;
+							state = State.START;
+						}
+						default -> {
+							line++;
+							posInLine = 1;
+							state = State.START;
+						}
+					}
+				}
+				case HAVE_EQUAL -> {
+					switch (ch) {
+						case '=' -> {
+							tokens.add(new Token(Kind.EQ, startPos, 2, line, startPosInLine));
+							pos++;
+							posInLine++;
+							state = State.START;
+						}
+						default -> {
+							tokens.add(new Token(Kind.ASSIGN, startPos, 1, line, startPosInLine));
+							state = State.START;
+						}
+					}
+				}
+				case HAVE_LT -> {
+					switch (ch) {
+						case '<' -> {
+							tokens.add(new Token(Kind.LPIXEL, startPos, 2, line, startPosInLine));
+							pos++;
+							posInLine++;
+							state = State.START;
+						}
+						case '=' -> {
+							tokens.add(new Token(Kind.LE, startPos, 2, line, startPosInLine));
+							pos++;
+							posInLine++;
+							state = State.START;
+						}
+						case '-' -> {
+							tokens.add(new Token(Kind.LARROW, startPos, 2, line, startPosInLine));
+							pos++;
+							posInLine++;
+							state = State.START;
+						}
+						default -> {
+							tokens.add(new Token(Kind.LT, startPos, 1, line, startPosInLine));
+							state = State.START;
+						}
+					}
+				}
+				case HAVE_GT -> {
+					switch (ch) {
+						case '>' -> {
+							tokens.add(new Token(Kind.RPIXEL, startPos, 2, line, startPosInLine));
+							pos++;
+							posInLine++;
+							state = State.START;
+						}
+						case '=' -> {
+							tokens.add(new Token(Kind.GE, startPos, 2, line, startPosInLine));
+							pos++;
+							posInLine++;
+							state = State.START;
+						}
+						default -> {
+							tokens.add(new Token(Kind.GT, startPos, 1, line, startPosInLine));
+							state = State.START;
+						}
+					}
+				}
+				case HAVE_MINUS -> {
+					switch (ch) {
+						case '>' -> {
+							tokens.add(new Token(Kind.RARROW, startPos, 2, line, startPosInLine));
+							pos++;
+							posInLine++;
+							state = State.START;
+						}
+						default -> {
+							tokens.add(new Token(Kind.MINUS, startPos, 1, line, startPosInLine));
+							state = State.START;
+						}
+					}
+				}
+				case HAVE_EXCL -> {
+					switch (ch) {
+						case '=' -> {
+							tokens.add(new Token(Kind.NEQ, startPos, 2, line, startPosInLine));
+							pos++;
+							posInLine++;
+							state = State.START;
+						}
+						default -> {
+							tokens.add(new Token(Kind.EXCL, startPos, 1, line, startPosInLine));
+							state = State.START;
+						}
+					}
+				}
+				case DIGITS -> {
+					switch (ch) {
+						case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' -> {
+							pos++;
+							posInLine++;
+						}
+
+						default -> {
+							tokens.add(new Token(Kind.INTLIT, startPos, pos - startPos, line, startPosInLine));
+							state = State.START;
+						}
+					}
+				}
+				case IDENT_PART -> {
+					System.out.println("IDENT_PART CASE");
+					Set <Character> digitCharSet = Set.of('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
+					if (Character.isJavaIdentifierStart(ch)){
+						pos++;
+						posInLine++;
+					} else if (digitCharSet.contains(ch)){
+						System.out.println("Digit in IDENT_PART: " + ch);
+						pos++;
+						posInLine++;
+					} else {
+						String pendingIDENT = String.copyValueOf(chars, startPos, pos - startPos);
+						switch (pendingIDENT) {
+							case "X" -> {
+								tokens.add(new Token(Kind.KW_X, startPos, pos - startPos, line, startPosInLine));
+								state = State.START;
+							}
+							case "Y" -> {
+								tokens.add(new Token(Kind.KW_Y, startPos, pos - startPos, line, startPosInLine));
+								state = State.START;
+							}
+							case "width" -> {
+								tokens.add(new Token(Kind.KW_WIDTH, startPos, pos - startPos, line, startPosInLine));
+								state = State.START;
+							}
+							case "height" -> {
+								tokens.add(new Token(Kind.KW_HEIGHT, startPos, pos - startPos, line, startPosInLine));
+								state = State.START;
+							}
+							case "screen" -> {
+								tokens.add(new Token(Kind.KW_SCREEN, startPos, pos - startPos, line, startPosInLine));
+								state = State.START;
+							}
+							case "screen_width" -> {
+								tokens.add(new Token(Kind.KW_SCREEN_WIDTH, startPos, pos - startPos, line, startPosInLine));
+								state = State.START;
+							}
+							case "screen_height" -> {
+								tokens.add(new Token(Kind.KW_SCREEN_HEIGHT, startPos, pos - startPos, line, startPosInLine));
+								state = State.START;
+							}
+							case "image" -> {
+								tokens.add(new Token(Kind.KW_image, startPos, pos - startPos, line, startPosInLine));
+								state = State.START;
+							}
+							case "int" -> {
+								tokens.add(new Token(Kind.KW_int, startPos, pos - startPos, line, startPosInLine));
+								state = State.START;
+							}
+							case "string" -> {
+								tokens.add(new Token(Kind.KW_string, startPos, pos - startPos, line, startPosInLine));
+								state = State.START;
+							}
+							case "red" -> {
+								tokens.add(new Token(Kind.KW_RED, startPos, pos - startPos, line, startPosInLine));
+								state = State.START;
+							}
+							case "green" -> {
+								tokens.add(new Token(Kind.KW_GREEN, startPos, pos - startPos, line, startPosInLine));
+								state = State.START;
+							}
+							case "blue" -> {
+								tokens.add(new Token(Kind.KW_BLUE, startPos, pos - startPos, line, startPosInLine));
+								state = State.START;
+							}
+							case "Z", "WHITE", "SILVER", "GRAY", "BLACK", "RED", "MAROON", "YELLOW", "OLIVE", "LIME",
+									"GREEN", "AQUA", "TEAL", "BLUE", "NAVY", "FUCHSIA", "PURPLE" -> {
+								tokens.add(new Token(Kind.CONST, startPos, pos - startPos, line, startPosInLine));
+								state = State.START;
+							}
+							default -> {
+								tokens.add(new Token(Kind.IDENT, startPos, pos - startPos, line, startPosInLine));
+								state = State.START;
+							}
+						}
+					}
+				}
+			}
+		}//while
+		// add an EOF token
 		tokens.add(new Token(Kind.EOF, pos, 0, line, posInLine));
 		return this;
 	}
+
+
 	
 
 	/**
@@ -124,7 +566,15 @@ public class Scanner {
 	 */
 	public int intVal(Token t) throws LexicalException {
 		/* IMPLEMENT THIS */
-		return 0;
+		if (t.kind == Kind.INTLIT) {
+			String tokenText = getText(t);
+			return Integer.parseInt(tokenText);
+		}else if (t.kind == Kind.CONST){
+			return constants.get(getText(t));
+		}
+		else{
+			throw new LexicalException("This token's kind is: " + t.kind + ", which should be INTLIT or CONST instead.", t.pos());
+		}
 	}
 	
 	/**
