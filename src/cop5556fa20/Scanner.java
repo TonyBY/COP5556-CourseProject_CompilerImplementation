@@ -61,7 +61,8 @@ public class Scanner {
 	 * Repeat until no more input.
 	 */
 	private enum State {
-		START, HAVE_EQUAL, DIGITS, IDENT_PART, HAVE_LT, HAVE_GT, HAVE_EXCL, HAVE_MINUS, HAVE_CR, HAVE_SLASH, COMMENT, HAVE_DOUBLE_QUOT
+		START, HAVE_EQUAL, DIGITS, IDENT_PART, HAVE_LT, HAVE_GT, HAVE_EXCL, HAVE_MINUS, HAVE_CR, HAVE_SLASH,
+		COMMENT, HAVE_DOUBLE_QUOT, ESCAPE
 	}
 	
 
@@ -76,7 +77,23 @@ public class Scanner {
 	public String getText(Token token) {
 		/* IMPLEMENT THIS */
 		if (token.kind() == Kind.STRINGLIT) {
-			return String.copyValueOf(chars, token.pos() + 1 , token.length - 2);
+			int startPos = token.pos() + 1;
+			int n = token.length - 2;
+			final char[] stringLitChars;
+
+			// Delimiting double quot has been removed from s0.
+			String s0 = String.copyValueOf(chars, startPos , n);
+			// Dealing with escapes in the string literal.
+			String s1 = s0.replace("\\r","\r");
+			String s2 = s1.replace("\\n","\n");
+			String s3 = s2.replace("\\f","\f");
+			String s4 = s3.replace("\\b","\b");
+			String s5 = s4.replace("\\t","\t");
+			String s6 = s5.replace("\\'","\'");
+			String s7 = s6.replace("\\\"","\"");
+			String s8 = s7.replace("\\\\","\\");
+
+			return s8;
 		} else {
 			return String.copyValueOf(chars, token.pos(), token.length);
 		}
@@ -304,6 +321,11 @@ public class Scanner {
 						}
 					}
 				}
+				case ESCAPE -> {
+					pos++;
+					posInLine++;
+					state = State.HAVE_DOUBLE_QUOT;
+				}
 				case HAVE_DOUBLE_QUOT -> {
 					switch (ch) {
 						case '"' -> {
@@ -311,6 +333,11 @@ public class Scanner {
 							pos++;
 							posInLine++;
 							state = State.START;
+						}
+						case '\\' -> {
+							pos++;
+							posInLine++;
+							state = State.ESCAPE;
 						}
 						case EOFchar -> {
 							throw new LexicalException("Failed to close a string literal", pos);

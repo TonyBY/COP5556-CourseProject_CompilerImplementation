@@ -17,10 +17,30 @@ import cop5556fa20.Scanner.LexicalException;
 import cop5556fa20.Scanner.Token;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.*;
+
 import static cop5556fa20.Scanner.Kind.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("preview") //text blocks are preview features in Java 14
+
+class ReadTextAsString
+{
+	static String fileName = "/Users/tony/Desktop/testSTRINGLIT.txt";
+
+	static String readFileAsString(String fileName)throws Exception
+	{
+		String data = "";
+		data = new String(Files.readAllBytes(Paths.get(fileName)));
+		return data;
+	}
+
+	static void main(String[] args) throws Exception
+	{
+		String data = readFileAsString(fileName);
+		System.out.println(data);
+	}
+}
 
 class ScannerTest {
 	
@@ -123,21 +143,30 @@ class ScannerTest {
 	}
 
 	@Test
-	public void testSTRINGLIT() throws LexicalException {
+	public void testSTRINGLIT() throws Exception {
+//		String input = ReadTextAsString.readFileAsString("/Users/tony/Desktop/testSTRINGLIT.txt");
+
 		String input = """
-				"123456789"X
-				"123\r\n\f\'\\"
-				""";
-		Scanner scanner = new Scanner(input).scan();
+		"123456789"X
+		"\\\\123\\b\\t\\n\\f\\r\\"\\'\\\\"
+		"\\\\123\b\t\n\f\r\\\"\'\\\\"
+		"This is an \\"example\\" StringLit"
+		""";
+
 		show(input);
+		Scanner scanner = new Scanner(input).scan();
 		show(scanner);
 		Token t0 = checkNext(scanner, STRINGLIT, 0, 11, 1, 1);
 		assertEquals("123456789", scanner.getText(t0));
 		show(scanner.getText(t0));
 		Token t1 = checkNext(scanner, KW_X, 11, 1, 1, 12);
 		assertEquals("X", scanner.getText(t1));
-		Token t2 = checkNext(scanner, STRINGLIT, 13, 10, 2, 1);
-		assertEquals("123\r\n\f\'\\", scanner.getText(t2));
+		Token t2 = checkNext(scanner, STRINGLIT, 13, 23, 2, 1);
+		assertEquals("\\123\b\t\n\f\r\"\'\\", scanner.getText(t2));
+		Token t3 = checkNext(scanner, STRINGLIT, 37, 17, 3, 1);
+		assertEquals("\\123\b\t\n\f\r\"\'\\", scanner.getText(t3));
+		Token t4 = checkNext(scanner, STRINGLIT, 55, 34, 4, 1);
+		assertEquals("This is an \"example\" StringLit", scanner.getText(t4));
 		checkNextIsEOF(scanner);
 	}
 
