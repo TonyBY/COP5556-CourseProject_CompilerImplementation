@@ -322,9 +322,16 @@ public class Scanner {
 					}
 				}
 				case ESCAPE -> {
-					pos++;
-					posInLine++;
-					state = State.HAVE_DOUBLE_QUOT;
+					switch (ch) {
+						case 'b', 't', 'n', 'f', 'r', '"', '\'', '\\' -> {
+							pos++;
+							posInLine++;
+							state = State.HAVE_DOUBLE_QUOT;
+						}
+						default -> {
+							throw new LexicalException("Illegal character (\\, but not an EscapeSequence) is found in the StingLit", pos);
+						}
+					}
 				}
 				case HAVE_DOUBLE_QUOT -> {
 					switch (ch) {
@@ -338,6 +345,9 @@ public class Scanner {
 							pos++;
 							posInLine++;
 							state = State.ESCAPE;
+						}
+						case '\n', '\r' -> {
+							throw new LexicalException("Illegal character (CR or CF) is found in the StingLit", pos);
 						}
 						case EOFchar -> {
 							throw new LexicalException("Failed to close a string literal", pos);

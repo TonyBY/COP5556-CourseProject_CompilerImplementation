@@ -149,7 +149,6 @@ class ScannerTest {
 		String input = """
 		"123456789"X
 		"\\\\123\\b\\t\\n\\f\\r\\"\\'\\\\"
-		"\\\\123\b\t\n\f\r\\\"\'\\\\"
 		"This is an \\"example\\" StringLit"
 		""";
 
@@ -163,11 +162,20 @@ class ScannerTest {
 		assertEquals("X", scanner.getText(t1));
 		Token t2 = checkNext(scanner, STRINGLIT, 13, 23, 2, 1);
 		assertEquals("\\123\b\t\n\f\r\"\'\\", scanner.getText(t2));
-		Token t3 = checkNext(scanner, STRINGLIT, 37, 17, 3, 1);
-		assertEquals("\\123\b\t\n\f\r\"\'\\", scanner.getText(t3));
-		Token t4 = checkNext(scanner, STRINGLIT, 55, 34, 4, 1);
-		assertEquals("This is an \"example\" StringLit", scanner.getText(t4));
+		Token t3 = checkNext(scanner, STRINGLIT, 37, 34, 3, 1);
+		assertEquals("This is an \"example\" StringLit", scanner.getText(t3));
 		checkNextIsEOF(scanner);
+	}
+
+	@Test
+	public void illegalStringLit() throws LexicalException {
+		String input =  """
+              "Example\\hString" 
+              """;
+		show(input);
+		Scanner scanner = new Scanner(input);
+		Exception exception = assertThrows(LexicalException.class, () -> {new Scanner(input).scan();});
+		show(exception);
 	}
 
 	@Test
