@@ -168,9 +168,21 @@ class ScannerTest {
 	}
 
 	@Test
-	public void illegalStringLit() throws LexicalException {
+	public void illegalStringLit1() throws LexicalException {
 		String input =  """
               "Example\\hString" 
+              """;
+		show(input);
+		Scanner scanner = new Scanner(input);
+		Exception exception = assertThrows(LexicalException.class, () -> {new Scanner(input).scan();});
+		show(exception);
+	}
+
+	@Test
+	public void illegalStringLit2() throws LexicalException {
+		String input =  """
+              "Example
+              String" 
               """;
 		show(input);
 		Scanner scanner = new Scanner(input);
