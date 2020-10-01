@@ -26,6 +26,10 @@ public class Scanner {
 		int line, //line number of token in source.  Starts at 1
 		int posInLine //position in line of source.  Starts at 1
 		) {
+
+		public boolean isKind(Kind k) {
+			return this.kind.equals(k);
+		}
 	}
 	
 	@SuppressWarnings("serial")
@@ -155,7 +159,7 @@ public class Scanner {
 
 		State state = State.START;
 		//initialization
-		while (pos < chars.length){ // read all chars
+		whileLoop: while (pos < chars.length){ // read all chars
 			char ch = chars[pos]; // get current char
 			switch (state) {
 				case START -> {
@@ -315,8 +319,7 @@ public class Scanner {
 								if(ch != EOFchar){
 									throw new LexicalException("Line: " + line + ", posInLine: " + posInLine + ", Illegal character: " + ch, pos);
 								}
-								pos++;
-								posInLine++; // Problem in start code! posInLine should increase as well.
+								break whileLoop;
 							}
 						}
 					}
@@ -517,13 +520,13 @@ public class Scanner {
 					}
 				}
 				case IDENT_PART -> {
-					System.out.println("IDENT_PART CASE");
+//					System.out.println("IDENT_PART CASE");
 					Set <Character> digitCharSet = Set.of('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
 					if (Character.isJavaIdentifierStart(ch)){
 						pos++;
 						posInLine++;
 					} else if (digitCharSet.contains(ch)){
-						System.out.println("Digit in IDENT_PART: " + ch);
+//						System.out.println("Digit in IDENT_PART: " + ch);
 						pos++;
 						posInLine++;
 					} else {

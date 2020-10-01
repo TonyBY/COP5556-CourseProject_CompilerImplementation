@@ -14,15 +14,13 @@
  */
 package cop5556fa20;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.jupiter.api.Test;
 
 import cop5556fa20.SimpleParser.SyntaxException;
 import cop5556fa20.Scanner.LexicalException;
 import static cop5556fa20.Scanner.Kind.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 /**
  * @author Beverly Sanders
  *
@@ -108,7 +106,6 @@ class SimpleParserTest {
 	 * token kind that manifests the error is not given or checked.
 	 * 
 	 * @param input
-	 * @param kind
 	 */
 	void fail(String input)  {
 		Exception exception = assertThrows(SyntaxException.class, () -> {

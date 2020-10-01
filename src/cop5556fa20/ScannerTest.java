@@ -210,6 +210,28 @@ class ScannerTest {
 	}
 
 	@Test
+	public void testEOF() throws LexicalException {
+		String input = "   \r\n    \r\n   a";
+		Scanner scanner = new Scanner(input).scan();
+		show(input);
+		show(scanner);
+		Token t0 = checkNext(scanner, IDENT, 14, 1, 3, 4);
+		assertEquals("a", scanner.getText(t0));
+		checkNext(scanner, EOF, 15, 0, 3, 5);
+	}
+
+	@Test
+	public void testIS() throws LexicalException {
+		String input = "a";
+		Scanner scanner = new Scanner(input).scan();
+		show(input);
+		show(scanner);
+		Token t0 = checkNext(scanner, IDENT, 0, 1, 1, 1);
+		show(t0.isKind(IDENT));
+		checkNext(scanner, EOF, 1, 0, 1, 2);
+	}
+
+	@Test
 	public void testCOMMENT() throws LexicalException {
 		String input = """
 				//abcd09102\r9//abc\nX//abc\r\nZ
