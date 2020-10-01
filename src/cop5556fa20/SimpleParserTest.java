@@ -37,7 +37,6 @@ class SimpleParserTest {
 		}
 	}
 	
-	
 	//creates and returns a parser for the given input.
 	private SimpleParser makeSimpleParser(String input) throws LexicalException {
 		show(input);        //Display the input 
@@ -128,6 +127,21 @@ class SimpleParserTest {
 	show(exception);
 	}
 
+	/**
+	 * Use when a syntax error is expected in a standalone expression.
+	 *
+	 * @param input
+	 * @param kind
+	 */
+	void failExpression(String input, Scanner.Kind kind)  {
+		Exception exception = assertThrows(SyntaxException.class, () -> {
+			SimpleParser parser = makeSimpleParser(input);
+			parser.expression();
+		});
+		show(exception);
+		assertEquals(kind, ((SyntaxException) exception).token().kind());
+	}
+
 
 
 	@Test
@@ -214,7 +228,170 @@ class SimpleParserTest {
 				""";
 		passExpression(input);
 	}
-	
 
-		
+	/* ---------------------Customized Testcases---------------------------*/
+
+	/* ----------Testcases for Expressions----------*/
+
+	@Test
+	public void testExpression() throws LexicalException, SyntaxException {
+		System.out.println("input1: ");
+		System.out.println("Expecting: failExpression, because Expression cannot be empty.");
+		String input = """
+
+				""";
+		failExpression(input, EOF);
+
+		System.out.println("\ninput2: ");
+		System.out.println("Expecting: LexicalException, because Expression can only be consist by legal tokens.");
+		String input2 = """
+				(a * + b) ^_^
+				""";
+		failLexical(input2);
+	}
+
+	@Test
+	public void testOrExpression() throws LexicalException, SyntaxException {
+		String input1 = """
+				(a * + b) | (a * + b) | (a * + b)
+				""";
+		passExpression(input1);
+
+		String input2 = """
+				(a * + b) || (a * + b)
+				""";
+		failExpression(input2, OR);
+	}
+
+	@Test
+	public void testAndExpression() throws LexicalException, SyntaxException {
+		String input = """
+				(a * + b) & (a * + b) & (a * + b)
+				""";
+		passExpression(input);
+
+		String input2 = """
+				(a * + b) && (a * + b)
+				""";
+		failExpression(input2, AND);
+	}
+
+	@Test
+	public void testEqExpression() throws LexicalException, SyntaxException {
+		String input = """
+				(a * + b) == (a * + b) != (a * + b)
+				""";
+		passExpression(input);
+	}
+
+	@Test
+	public void testRelExpression() throws LexicalException, SyntaxException {
+		String input = """
+				(a * + b) >= (a * + b) <= (a * + b) > (a * + b) < (a * + b)
+				""";
+		passExpression(input);
+	}
+
+	@Test
+	public void testAddExpression() throws LexicalException, SyntaxException {
+		String input = """
+				(a * + b) + (a * + b) - (a * + b)
+				""";
+		passExpression(input);
+	}
+
+	@Test
+	public void testMultAddExpression() throws LexicalException, SyntaxException {
+		String input = """
+				(a * + b) * (a * + b) / (a * + b) % (a * + b)
+				""";
+		passExpression(input);
+	}
+
+	@Test
+	public void testUnaryExpression() throws LexicalException, SyntaxException {
+		String input1 = """
+				+(a * + b) * -(a * + b) / (a * + b) % +(a * + b)
+				""";
+		passExpression(input1);
+
+		String input2 = """
+				+(a * + b) * -(a * + b) / (a * + b) % *(a * + b)
+				""";
+		failExpression(input2, STAR);
+	}
+
+	@Test
+	public void testUnaryExpressionNotPlusMinus() throws LexicalException, SyntaxException {
+		String input1 = """
+				!(a * + b)
+				""";
+		passExpression(input1);
+	}
+
+	@Test
+	public void testHashExpressionNotPlusMinus() throws LexicalException, SyntaxException {
+		String input1 = """
+				(a * + b) # width # height # red # green # blue
+				""";
+		passExpression(input1);
+
+		String input2 = """
+				(a * + b) # width # height # red # green # test
+				""";
+		failExpression(input2, IDENT);
+	}
+
+	@Test
+	public void testPrimary() throws LexicalException, SyntaxException {
+		System.out.println("input1: ");
+		System.out.println("Expecting: passExpression");
+		String input1 = """
+				100 + abc - (!"def") * X / Y % BLACK & <<(a * + b), (a * + b), (a * + b)>> | 
+				X[(a * + b), (a * + b)] % @ (a * + b)
+				""";
+		passExpression(input1);
+
+		System.out.println("\ninput2: ");
+		System.out.println("Expecting: failExpression, because Prime cannot start by PixelSelector, a.k.a, LSQUARE.");
+		String input2 = """
+				[(a * + b), (a * + b)]
+				""";
+		failExpression(input2, LSQUARE);
+
+		System.out.println("\ninput3: ");
+		System.out.println("Expecting: failExpression, because Prime cannot be (KW_SCREEN).");
+		String input3 = """
+				(screen)
+				""";
+		failExpression(input3, KW_SCREEN);
+
+		System.out.println("\ninput4: ");
+		System.out.println("Expecting: failExpression, because expression cannot be empty.");
+		String input4 = """
+				()
+				""";
+		failExpression(input4, RPAREN);
+	}
+
+	@Test
+	public void testPixelSelector() throws LexicalException, SyntaxException {
+		System.out.println("input1: ");
+		System.out.println("Expecting: passExpression");
+		String input1 = """
+				X[(a * + b), (a * + b)]
+				""";
+		passExpression(input1);
+
+		System.out.println("\ninput2: ");
+		System.out.println("Expecting: failExpression, because missing token: LSQUARE.");
+		String input2 = """
+				X[(a * + b), (a * + b)
+				""";
+		failExpression(input2, EOF);
+	}
+
+	/* ----------Testcases for Programs----------*/
+
+
 }

@@ -50,19 +50,19 @@ public class SimpleParser {
 //	private static final Set<Kind> IMAGE_DECLARATION_PREDICT_SET = Set.of(KW_image);
 	private static final Set<Kind> STATEMENT_TAIL_PREDICT_SET = Set.of(ASSIGN, RARROW,  LARROW);
 	private static final Set<Kind> NEW_ASSIGNMENT_STATEMENT_PREDICT_SET = Set.of(PLUS, MINUS, EXCL, INTLIT, IDENT,
-			LPAREN, STRINGLIT, KW_X, KW_Y, CONST, LPIXEL, AT, LSQUARE);
+			LPAREN, STRINGLIT, KW_X, KW_Y, CONST, LPIXEL, AT);
 	private static final Set<Kind> NEW_LOOP_STATEMENT_PREDICT_SET = Set.of(STAR);
 	private static final Set<Kind> NEW_IMAGE_OUT_STATEMENT_PREDICT_SET = Set.of(RARROW);
 	private static final Set<Kind> NEW_IMAGE_OUT_STATEMENT_TAIL_PREDICT_SET = Set.of(PLUS, MINUS, EXCL, INTLIT, IDENT,
-			LPAREN, STRINGLIT, KW_X, KW_Y, CONST, LPIXEL, AT, LSQUARE, KW_SCREEN);
+			LPAREN, STRINGLIT, KW_X, KW_Y, CONST, LPIXEL, AT, KW_SCREEN);
 	private static final Set<Kind> NEW_IMAGE_IN_STATEMENT_PREDICT_SET = Set.of(LARROW);
 	private static final Set<Kind> EXPRESSION_PREDICT_SET = Set.of(PLUS, MINUS, EXCL, INTLIT, IDENT, LPAREN,
-			STRINGLIT, KW_X, KW_Y, CONST, LPIXEL, AT, LSQUARE);
+			STRINGLIT, KW_X, KW_Y, CONST, LPIXEL, AT);
 
 	private static final Set<Kind> UNARY_EXPRESSION_NOT_PLUS_MINUS_PREDICT_SET = Set.of(EXCL, INTLIT, IDENT, LPAREN,
-			STRINGLIT, KW_X, KW_Y, CONST, LPIXEL, AT, LSQUARE);
+			STRINGLIT, KW_X, KW_Y, CONST, LPIXEL, AT);
 	private static final Set<Kind> HASH_EXPRESSION_PREDICT_SET = Set.of(INTLIT, IDENT, LPAREN, STRINGLIT, KW_X, KW_Y,
-			CONST, LPIXEL, AT, LSQUARE);
+			CONST, LPIXEL, AT);
 
 	private static final Set<Kind> ATTRIBUTE_PREDICT_SET =Set.of(KW_WIDTH, KW_HEIGHT, KW_RED, KW_GREEN, KW_BLUE);
 
@@ -422,10 +422,11 @@ public class SimpleParser {
 				pixelConstructor();
 			}else if (t.isKind(AT)) {
 				argExpression();
-			}else if (t.isKind(LSQUARE)){
-				pixelSelector();
-			}else{
+			} else{
 				consume();
+			}
+			if (t.isKind(LSQUARE)){
+				pixelSelector();
 			}
 		}else{
 			throw new SyntaxException(t,
