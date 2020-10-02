@@ -24,6 +24,14 @@ import static cop5556fa20.Scanner.Kind.*;
 
 public class SimpleParser {
 
+	//To make it easy to print objects and turn this output on and off.
+	static final boolean doPrint = false;
+	private void show(Object input) {
+		if (doPrint) {
+			System.out.println(input.toString());
+		}
+	}
+
 	@SuppressWarnings("serial")
 	public static class SyntaxException extends Exception {
 		final Token token;
@@ -96,7 +104,7 @@ public class SimpleParser {
 	public boolean consumedAll() {
 		if (scanner.hasTokens()) { 
 			Token t = scanner.nextToken();
-			System.out.println("consumedAll: " + t.kind());
+			show("consumedAll: " + t.kind());
 			return t.kind() == Kind.EOF;
 		}
 		return true;
@@ -104,7 +112,7 @@ public class SimpleParser {
 
 	private void program() throws SyntaxException, LexicalException {
 		//TODO
-		System.out.println("program: " + t.kind());
+		show("program: " + t.kind());
 		if (PROGRAM_PREDICT_SET.contains(t.kind()) || t.isKind(EOF)) {
 			while (PROGRAM_PREDICT_SET.contains(t.kind())) {
 				if (t.isKind(Kind.IDENT)) {
@@ -122,7 +130,7 @@ public class SimpleParser {
 	}
 
 	private void declaration() throws SyntaxException, LexicalException {
-		System.out.println("declaration: " + t.kind());
+		show("declaration: " + t.kind());
 		if (VARIABLE_DECLARATION_PREDICT_SET.contains(t.kind())) {
 			variableDeclaration();
 		} else { // if (IMAGE_DECLARATION_PREDICT_SET.contains(t.kind())) {
@@ -131,7 +139,7 @@ public class SimpleParser {
 	}
 
 	private  void variableDeclaration() throws SyntaxException, LexicalException {
-		System.out.println("variableDeclaration: " + t.kind());
+		show("variableDeclaration: " + t.kind());
 		consume(); // t.token should be KW_int|KW_string.
 		match(IDENT);
 		if (t.isKind(ASSIGN)){
@@ -141,17 +149,18 @@ public class SimpleParser {
 	}
 
 	private void imageDeclaration() throws SyntaxException, LexicalException {
-		System.out.println("imageDeclaration: " + t.kind());
-		match(KW_int);
+		show("imageDeclaration: " + t.kind());
+		match(KW_image);
 		if (t.isKind(LSQUARE)) {
 			consume();
 			expression();
 			match(COMMA);
 			expression();
 			match(RSQUARE);
-		} else {
-			match(IDENT);
 		}
+
+		match(IDENT);
+
 		if (t.isKind(LARROW) || t.isKind(ASSIGN)) {
 			consume();
 			expression();
@@ -159,13 +168,13 @@ public class SimpleParser {
 	}
 
 	private void statement() throws SyntaxException, LexicalException {
-		System.out.println("statement: " + t.kind());
+		show("statement: " + t.kind());
 		match(IDENT);
 		statementTail();
 	}
 
 	private void statementTail() throws SyntaxException, LexicalException {
-		System.out.println("statementTail: " + t.kind());
+		show("statementTail: " + t.kind());
 		if (STATEMENT_TAIL_PREDICT_SET.contains(t.kind())) {
 			if (t.isKind(ASSIGN)) {
 				consume();
@@ -195,31 +204,30 @@ public class SimpleParser {
 	}
 
 	private void newAssignmentStatement() throws SyntaxException, LexicalException {
-		System.out.println("newAssignmentStatement: " + t.kind());
+		show("newAssignmentStatement: " + t.kind());
 		expression();
 	}
 
 	private void newLoopStatement() throws SyntaxException, LexicalException {
-		System.out.println("newLoopStatement: " + t.kind());
+		show("newLoopStatement: " + t.kind());
 		match(STAR);
 		constXYSelector();
 		match(COLON);
 		if (EXPRESSION_PREDICT_SET.contains(t.kind())){
 			expression();
-		} else {
-			match(COLON);
-			expression();
 		}
+		match(COLON);
+		expression();
 	}
 
 	private void newImageOutStatement() throws SyntaxException, LexicalException {
-		System.out.println("newImageOutStatement: " + t.kind());
+		show("newImageOutStatement: " + t.kind());
 		match(RARROW);
 		newImageOutStatementTail();
 	}
 
 	private void newImageOutStatementTail() throws SyntaxException, LexicalException {
-		System.out.println("newImageOutStatementTail: " + t.kind());
+		show("newImageOutStatementTail: " + t.kind());
 		if (EXPRESSION_PREDICT_SET.contains(t.kind())) {
 			expression();
 		} else if (t.isKind(KW_SCREEN)) {
@@ -239,13 +247,13 @@ public class SimpleParser {
 	}
 
 	private void newImageInStatement() throws SyntaxException, LexicalException {
-		System.out.println("newImageInStatement: " + t.kind());
+		show("newImageInStatement: " + t.kind());
 		match(LARROW);
 		expression();
 	}
 
 	private void constXYSelector() throws SyntaxException {
-		System.out.println("constXYSelector: " + t.kind());
+		show("constXYSelector: " + t.kind());
 		match(LSQUARE);
 		match(KW_X);
 		match(COMMA);
@@ -257,7 +265,7 @@ public class SimpleParser {
 	//make this public for convenience testing
 	public void expression() throws SyntaxException, LexicalException {
 		//TODO
-		System.out.println("Expression: " + t.kind());
+		show("Expression: " + t.kind());
 		if (EXPRESSION_PREDICT_SET.contains(t.kind())) {
 			orExpression();
 			if (t.isKind(Q)) {
@@ -274,7 +282,7 @@ public class SimpleParser {
 	}
 
 	public void orExpression() throws SyntaxException, LexicalException {
-		System.out.println("orExpression: " + t.kind());
+		show("orExpression: " + t.kind());
 		if (EXPRESSION_PREDICT_SET.contains(t.kind())) {
 			andExpression();
 			while (t.isKind(OR)) {
@@ -290,7 +298,7 @@ public class SimpleParser {
 	}
 
 	public void andExpression() throws SyntaxException, LexicalException {
-		System.out.println("andExpression: " + t.kind());
+		show("andExpression: " + t.kind());
 		if (EXPRESSION_PREDICT_SET.contains(t.kind())) {
 			eqExpression();
 			while (t.isKind(AND)) {
@@ -305,7 +313,7 @@ public class SimpleParser {
 	}
 
 	public void eqExpression() throws SyntaxException, LexicalException {
-		System.out.println("eqExpression: " + t.kind());
+		show("eqExpression: " + t.kind());
 		if (EXPRESSION_PREDICT_SET.contains(t.kind())) {
 			relExpression();
 			while (t.isKind(EQ) || t.isKind(NEQ)) {
@@ -320,7 +328,7 @@ public class SimpleParser {
 	}
 
 	public void relExpression() throws SyntaxException, LexicalException {
-		System.out.println("relExpression: " + t.kind());
+		show("relExpression: " + t.kind());
 		if (EXPRESSION_PREDICT_SET.contains(t.kind())) {
 			addExpression();
 			while (t.isKind(LT) || t.isKind(GT) || t.isKind(LE) || t.isKind(GE)) {
@@ -335,7 +343,7 @@ public class SimpleParser {
 	}
 
 	public void addExpression() throws SyntaxException, LexicalException {
-		System.out.println("addExpression: " + t.kind());
+		show("addExpression: " + t.kind());
 		if (EXPRESSION_PREDICT_SET.contains(t.kind())) {
 			multExpression();
 			while (t.isKind(PLUS) || t.isKind(MINUS)) {
@@ -350,7 +358,7 @@ public class SimpleParser {
 	}
 
 	public void multExpression() throws SyntaxException, LexicalException {
-		System.out.println("multExpression: " + t.kind());
+		show("multExpression: " + t.kind());
 		if (EXPRESSION_PREDICT_SET.contains(t.kind())) {
 			unaryExpression();
 			while (t.isKind(STAR) || t.isKind(DIV) || t.isKind(MOD)) {
@@ -365,7 +373,7 @@ public class SimpleParser {
 	}
 
 	public void unaryExpression() throws SyntaxException, LexicalException {
-		System.out.println("unaryExpression: " + t.kind());
+		show("unaryExpression: " + t.kind());
 		if (EXPRESSION_PREDICT_SET.contains(t.kind())) {
 			if (t.isKind(PLUS) || t.isKind(MINUS)) {
 				consume();
@@ -381,7 +389,7 @@ public class SimpleParser {
 	}
 
 	public void unaryExpressionNotPlusMinus() throws SyntaxException, LexicalException {
-		System.out.println("unaryExpressionNotPlusMinus: " + t.kind());
+		show("unaryExpressionNotPlusMinus: " + t.kind());
 		if (UNARY_EXPRESSION_NOT_PLUS_MINUS_PREDICT_SET.contains(t.kind())) {
 			if (t.isKind(EXCL)) {
 				consume();
@@ -397,7 +405,7 @@ public class SimpleParser {
 	}
 
 	public void hashExpression() throws SyntaxException, LexicalException {
-		System.out.println("hashExpression: " + t.kind());
+		show("hashExpression: " + t.kind());
 		if (HASH_EXPRESSION_PREDICT_SET.contains(t.kind())) {
 			primary();
 			while (t.isKind(HASH)) {
@@ -412,7 +420,7 @@ public class SimpleParser {
 	}
 
 	public void primary() throws SyntaxException, LexicalException {
-		System.out.println("primary: " + t.kind());
+		show("primary: " + t.kind());
 		if (HASH_EXPRESSION_PREDICT_SET.contains(t.kind())) {
 			if (t.isKind(LPAREN)){
 				consume();
@@ -436,7 +444,7 @@ public class SimpleParser {
 	}
 
 	public void pixelConstructor() throws SyntaxException, LexicalException {
-		System.out.println("pixelConstructor: " + t.kind());
+		show("pixelConstructor: " + t.kind());
 		match(LPIXEL);
 		expression();
 		match(COMMA);
@@ -447,13 +455,13 @@ public class SimpleParser {
 	}
 
 	public void argExpression() throws SyntaxException, LexicalException {
-		System.out.println("argExpression: " + t.kind());
+		show("argExpression: " + t.kind());
 		match(AT);
 		primary();
 	}
 
 	public void pixelSelector() throws SyntaxException, LexicalException {
-		System.out.println("pixelSelector: " + t.kind());
+		show("pixelSelector: " + t.kind());
 		match(LSQUARE);
 		expression();
 		match(COMMA);
@@ -462,7 +470,7 @@ public class SimpleParser {
 	}
 
 	public void attribute() throws SyntaxException {
-		System.out.println("attribute: " + t.kind());
+		show("attribute: " + t.kind());
 		if (ATTRIBUTE_PREDICT_SET.contains(t.kind())) {
 			consume();
 		}else{

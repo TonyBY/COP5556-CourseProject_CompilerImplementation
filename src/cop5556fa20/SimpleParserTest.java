@@ -392,6 +392,141 @@ class SimpleParserTest {
 	}
 
 	/* ----------Testcases for Programs----------*/
+	@Test
+	public void testProgram() throws LexicalException, SyntaxException {
+		show("input1: ");
+		show("Expecting: LexicalException, because program can only be consist by legal tokens.");
+		String input = """
+				t = (a * + b) ^_^
+				""";
+		failLexical(input);
+	}
 
+	@Test
+	public void testVariableDeclaration() throws LexicalException, SyntaxException {
+		show("input1: ");
+		show("Expecting: fail, because expecting Expression after ASSIGN but get SEMI");
+		String input1 = """
+				int abc;
+				string bcd = ;
+				""";
+		fail(input1,SEMI);
+
+		show("input2: ");
+		show("Expecting: fail, because expecting Expression after ASSIGN but get EOF");
+		String input2 = """
+				int abc;
+				string bcd = 
+				""";
+		fail(input2,EOF);
+
+		show("input3: ");
+		show("Expecting: pass");
+		String input3 = """
+				int abc;
+				string bcd = (a * + b);
+				""";
+		pass(input3);
+
+		show("input4: ");
+		show("Expecting: fail, because expecting IDEN after KW_int/KW_string but get ASSIGN");
+		String input4 = """
+				int abc;
+				string = 
+				""";
+		fail(input4, ASSIGN);
+	}
+
+	@Test
+	public void testImageDeclaration() throws LexicalException, SyntaxException {
+		show("input1: ");
+		show("Expecting: pass");
+		String input1 = """
+				image [(a * + b), (a * + b)] identifier <- (a * + b);
+				""";
+		pass(input1);
+
+		show("input2: ");
+		show("Expecting: pass");
+		String input2 = """
+				image identifier <- (a * + b);
+				""";
+		pass(input2);
+
+		show("input3: ");
+		show("Expecting: pass");
+		String input3 = """
+				image identifier;
+				""";
+		pass(input3);
+
+		show("input4: ");
+		show("Expecting: pass");
+		String input4 = """
+				image [(a * + b), (a * + b)] identifier;
+				""";
+		pass(input4);
+	}
+
+	@Test
+	public void testAssignmentStatement() throws LexicalException, SyntaxException {
+		show("input1: ");
+		show("Expecting: pass");
+		String input1 = """
+				identifier =  (a * + b);
+				""";
+		pass(input1);
+	}
+
+	@Test
+	public void testLoopStatement() throws LexicalException, SyntaxException {
+		show("input1: ");
+		show("Expecting: pass");
+		String input1 = """
+				identifier =* [X, Y] : (a * + b) : (a * + b);
+				""";
+		pass(input1);
+
+		show("input2: ");
+		show("Expecting: pass");
+		String input2 = """
+				identifier =* [X, Y] :: (a * + b);
+				""";
+		pass(input2);
+	}
+
+	@Test
+	public void testImageInStatement() throws LexicalException, SyntaxException {
+		show("input1: ");
+		show("Expecting: pass");
+		String input1 = """
+				identifier <- (a * + b);
+				""";
+		pass(input1);
+	}
+
+	@Test
+	public void testImageOutStatement() throws LexicalException, SyntaxException {
+		show("input1: ");
+		show("Expecting: pass");
+		String input1 = """
+				identifier -> (a * + b);
+				""";
+		pass(input1);
+
+		show("input2: ");
+		show("Expecting: pass");
+		String input2 = """
+				identifier -> screen [(a * + b), (a * + b)];
+				""";
+		pass(input2);
+
+		show("input3: ");
+		show("Expecting: pass");
+		String input3 = """
+				identifier -> screen;
+				""";
+		pass(input3);
+	}
 
 }
