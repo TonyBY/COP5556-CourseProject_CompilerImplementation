@@ -14,11 +14,11 @@
 
 package cop5556fa20.AST;
 
-import static org.junit.Assert.assertEquals;
+import cop5556fa20.Scanner;
 
 import java.util.function.Predicate;
 
-import cop5556fa20.Scanner;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ASTTestLambdas {
 

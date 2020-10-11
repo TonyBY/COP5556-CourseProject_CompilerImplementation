@@ -635,7 +635,7 @@ public class Scanner {
 	 * Included for your convenience.  
 	 * 
 	 */
-	private static HashMap<String, Integer> constants;
+	public static HashMap<String, Integer> constants;
 	static {
 		constants = new HashMap<String, Integer>();	
 		constants.put("Z", 255);

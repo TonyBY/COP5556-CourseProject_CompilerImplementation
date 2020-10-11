@@ -13,25 +13,16 @@
  */
 package cop5556fa20;
 
-import static cop5556fa20.AST.ASTTestLambdas.checkDecVar;
-import static cop5556fa20.AST.ASTTestLambdas.checkExprBinary;
-import static cop5556fa20.AST.ASTTestLambdas.checkExprConst;
-import static cop5556fa20.AST.ASTTestLambdas.checkExprIntLit;
-import static cop5556fa20.AST.ASTTestLambdas.checkExprStringLit;
-import static cop5556fa20.AST.ASTTestLambdas.checkStatementImageIn;
-import static cop5556fa20.Scanner.Kind.PLUS;
-import static org.junit.Assert.assertEquals;
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
-
+import cop5556fa20.AST.*;
 import cop5556fa20.Parser.SyntaxException;
 import cop5556fa20.Scanner.LexicalException;
-import cop5556fa20.AST.ASTNode;
-import cop5556fa20.AST.DecVar;
-import cop5556fa20.AST.ExprStringLit;
-import cop5556fa20.AST.Program;
-import cop5556fa20.AST.Type;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static cop5556fa20.AST.ASTTestLambdas.*;
+import static cop5556fa20.Scanner.Kind.PLUS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Beverly Sanders
