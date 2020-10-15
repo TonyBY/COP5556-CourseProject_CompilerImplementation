@@ -19,6 +19,7 @@ import cop5556fa20.Scanner.LexicalException;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 import static cop5556fa20.AST.ASTTestLambdas.*;
 import static cop5556fa20.Scanner.Kind.PLUS;
@@ -135,7 +136,7 @@ class ParserTest {
 		DecVar d0 = (DecVar) decOrStatement.get(0); // gets the declaration. The cast will fail if not a DecVar
 		// use checkDecVar lambda, which takes type, name, and a lambda to check the
 		// expression.
-		checkDecVar(Type.Int, // the type should be int
+		Predicate<ASTNode> checkDecVarPredict = checkDecVar(Type.Int, // the type should be int
 				"abc", // the variable name should be "abc"
 				checkExprBinary( // the expression is a binary expression with operator PLUS
 						checkExprIntLit(4), // the left expression is an ExprIntLit with value 4, use checkExprIntLit to
@@ -144,7 +145,8 @@ class ParserTest {
 																				// Use checkExprConst to check name
 																				// "RED", and value from table in
 																				// Scanner.
-						PLUS)).test(d0); // invoke the test method with the decVar to evaluate.
+						PLUS));
+		checkDecVarPredict.test(d0); // invoke the test method with the decVar to evaluate.
 	}
 
 	/**

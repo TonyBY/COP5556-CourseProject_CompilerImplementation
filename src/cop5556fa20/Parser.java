@@ -15,27 +15,15 @@
 
 package cop5556fa20;
 
-import static cop5556fa20.Scanner.Kind.ASSIGN;
-import static cop5556fa20.Scanner.Kind.EOF;
-import static cop5556fa20.Scanner.Kind.IDENT;
-import static cop5556fa20.Scanner.Kind.KW_int;
-import static cop5556fa20.Scanner.Kind.KW_string;
-import static cop5556fa20.Scanner.Kind.SEMI;
+import cop5556fa20.AST.*;
+import cop5556fa20.Scanner.Kind;
+import cop5556fa20.Scanner.LexicalException;
+import cop5556fa20.Scanner.Token;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cop5556fa20.Scanner.Kind;
-import cop5556fa20.Scanner.LexicalException;
-import cop5556fa20.Scanner.Token;
-import cop5556fa20.AST.ASTNode;
-import cop5556fa20.AST.Dec;
-import cop5556fa20.AST.DecVar;
-import cop5556fa20.AST.ExprIntLit;
-import cop5556fa20.AST.ExprStringLit;
-import cop5556fa20.AST.Expression;
-import cop5556fa20.AST.Program;
-import cop5556fa20.AST.Type;
+import static cop5556fa20.Scanner.Kind.*;
 
 public class Parser {
 
@@ -165,7 +153,7 @@ public class Parser {
 	/**
 	 * Precondition: kind != EOF
 	 * 
-	 * @param kind
+	 * @param kinds
 	 * @return
 	 * @throws SyntaxException
 	 */

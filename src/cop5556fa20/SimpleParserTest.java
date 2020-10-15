@@ -536,28 +536,28 @@ class SimpleParserTest {
 		pass(input3);
 	}
 
-//	@Test
-//	public void testFailed() throws LexicalException, SyntaxException {
-//		show("input1: ");
-//		show("Expecting: SEMI");
-//		String input1 = """
-//				image im[1000,2000] <- @0;
-//				""";
-//		fail(input1, SEMI);
-//
-//		show("\ninput2: ");
-//		show("Expecting: SEMI");
-//		String input2 = """
-//				image im[1000,2000] ;
-//				""";
-//		fail(input2, SEMI);
-//
-//		show("\ninput3: ");
-//		show("Expecting: SEMI");
-//		String input3 = """
-//				image im[1000,2000] = im2;
-//				""";
-//		fail(input3, SEMI);
-//	}
+	@Test
+	public void testFailed() throws LexicalException, SyntaxException {
+		show("input1: ");
+		show("Expecting: SEMI");
+		String input1 = """
+				image [1000,2000] <- @0;
+				""";
+		fail(input1, LARROW);
+
+		show("\ninput2: ");
+		show("Expecting: SEMI");
+		String input2 = """
+				image [1000,2000] im;
+				""";
+		pass(input2);
+
+		show("\ninput3: ");
+		show("Expecting: SEMI");
+		String input3 = """
+				image [1000,2000] im = im2;
+				""";
+		pass(input3);
+	}
 
 }
