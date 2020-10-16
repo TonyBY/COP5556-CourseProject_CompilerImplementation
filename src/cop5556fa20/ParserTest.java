@@ -166,6 +166,19 @@ class ParserTest {
 		checkDecVar(Type.Int, "abc", checkExprIntLit(4)).test(d0);
 	}
 
+	@Test
+	public void testExprHash() throws Scanner.LexicalException, SyntaxException {
+		String input = """
+				int hashTest = 3 # width # height;
+				""";
+		Parser parser = makeParser(input);
+		ASTNode node = parser.parse();
+		List<ASTNode> decOrStatement = ((Program) node).decOrStatement();
+		DecVar d0 = (DecVar) decOrStatement.get(0);
+		show(d0.expression().toString());
+		checkDecVar(Type.Int, "hashTest", checkExprHash(checkExprHash(checkExprIntLit(3), "width"), "height")).test(d0);
+	}
+
 
 
 }
