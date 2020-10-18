@@ -29,7 +29,7 @@ import static cop5556fa20.Scanner.Kind.*;
 public class Parser {
 
 	//To make it easy to print objects and turn this output on and off.
-	static final boolean doPrint = true;
+	static final boolean doPrint = false;
 	private void show(Object input) {
 		if (doPrint) {
 			System.out.println(input.toString());

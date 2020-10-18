@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import static cop5556fa20.AST.ASTTestLambdas.*;
-import static cop5556fa20.Scanner.Kind.PLUS;
+import static cop5556fa20.Scanner.Kind.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
@@ -166,19 +166,393 @@ class ParserTest {
 		checkDecVar(Type.Int, "abc", checkExprIntLit(4)).test(d0);
 	}
 
+	/* ---------------------Customized Testcases---------------------------*/
+	@Test
+	public void testVarDec2() throws Scanner.LexicalException, SyntaxException {
+		String input = """
+				int abc;
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		DecVar d0 = (DecVar) decOrStatement.get(0);
+		checkDecVar(Type.Int, "abc", checkExprEmpty()).test(d0);
+	}
+
+	@Test
+	public void testImageDec() throws Scanner.LexicalException, SyntaxException {
+		show("input1: ");
+		String input1 = """
+				image [(a * + b), (a * + b)] identifier <- (a * + b);
+				""";
+		Parser parser = makeParser(input1);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		DecImage d0 = (DecImage) decOrStatement.get(0);
+		checkDecImage(d0.name(),
+				checkExprBinary(checkExprVar("a"),
+						checkExprUnary(PLUS, checkExprVar("b")), STAR),
+				checkExprBinary(checkExprVar("a"),
+						checkExprUnary(PLUS, checkExprVar("b")), STAR),
+				LARROW,
+				checkExprBinary(checkExprVar("a"),
+						checkExprUnary(PLUS, checkExprVar("b")), STAR)).test(d0);
+
+		show("\ninput2: ");
+		String input2 = """
+				image identifier <- (a * + b);
+				""";
+		Parser parser2 = makeParser(input2);
+		Program node2 = parser2.parse();
+		List<ASTNode> decOrStatement2 = node2.decOrStatement();
+		DecImage d02 = (DecImage) decOrStatement2.get(0);
+		checkDecImage(d02.name(),
+				checkExprEmpty(),
+				checkExprEmpty(),
+				LARROW,
+				checkExprBinary(checkExprVar("a"),
+						checkExprUnary(PLUS, checkExprVar("b")), STAR)).test(d02);
+
+		show("\ninput3: ");
+		show("Expecting: pass");
+		String input3 = """
+				image identifier;
+				""";
+		Parser parser3 = makeParser(input3);
+		Program node3 = parser3.parse();
+		List<ASTNode> decOrStatement3 = node3.decOrStatement();
+		DecImage d03 = (DecImage) decOrStatement3.get(0);
+		checkDecImage(d03.name(),
+				checkExprEmpty(),
+				checkExprEmpty(),
+				NOP,
+				checkExprEmpty()).test(d03);
+
+		show("\ninput4: ");
+		show("Expecting: pass");
+		String input4 = """
+				image [(a * + b), (a * + b)] identifier;
+				""";
+		Parser parser4 = makeParser(input4);
+		Program node4 = parser4.parse();
+		List<ASTNode> decOrStatement4 = node4.decOrStatement();
+		DecImage d04 = (DecImage) decOrStatement4.get(0);
+		checkDecImage(d04.name(),
+				checkExprBinary(checkExprVar("a"),
+						checkExprUnary(PLUS, checkExprVar("b")), STAR),
+				checkExprBinary(checkExprVar("a"),
+						checkExprUnary(PLUS, checkExprVar("b")), STAR),
+				NOP,
+				checkExprEmpty()).test(d04);
+	}
+
+	@Test
+	public void testStatementAssign() throws LexicalException, SyntaxException{
+		show("input: ");
+		show("Expecting: pass");
+		String input = """
+				identifier =  (a * + b);
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		StatementAssign d0 = (StatementAssign) decOrStatement.get(0);
+		checkStatementAssignment(d0.name(),
+				checkExprBinary(checkExprVar("a"),
+						checkExprUnary(PLUS, checkExprVar("b")), STAR)).test(d0);
+
+	}
+
+	@Test
+	public void testStatementLoop1() throws LexicalException, SyntaxException{
+		show("input: ");
+		show("Expecting: pass");
+		String input = """
+				identifier =* [X, Y] : (a * + b) : (a * + b);
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		StatementLoop d0 = (StatementLoop) decOrStatement.get(0);
+		checkStatementLoop(d0.name(),
+				checkExprBinary(checkExprVar("a"),
+						checkExprUnary(PLUS, checkExprVar("b")), STAR),
+				checkExprBinary(checkExprVar("a"),
+						checkExprUnary(PLUS, checkExprVar("b")), STAR)).test(d0);
+	}
+
+	@Test
+	public void testStatementLoop2() throws LexicalException, SyntaxException{
+		show("input: ");
+		show("Expecting: pass");
+		String input = """
+				identifier =* [X, Y] :: (a * + b);
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		StatementLoop d0 = (StatementLoop) decOrStatement.get(0);
+		checkStatementLoop(d0.name(),
+				checkExprEmpty(),
+				checkExprBinary(checkExprVar("a"),
+						checkExprUnary(PLUS, checkExprVar("b")), STAR)).test(d0);
+	}
+
+	@Test
+	public void testStatementImageIn() throws LexicalException, SyntaxException{
+		show("input: ");
+		show("Expecting: pass");
+		String input = """
+				identifier <- (a * + b);
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		StatementImageIn d0 = (StatementImageIn) decOrStatement.get(0);
+		checkStatementImageIn(d0.name(),
+				checkExprBinary(checkExprVar("a"),
+						checkExprUnary(PLUS, checkExprVar("b")), STAR)).test(d0);
+	}
+
+	@Test
+	public void testStatementImageOut1() throws LexicalException, SyntaxException{
+		show("input: ");
+		show("Expecting: pass");
+		String input = """
+				identifier -> (a * + b);
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		StatementOutFile d0 = (StatementOutFile) decOrStatement.get(0);
+		checkStatementOutFile(d0.name(),
+				checkExprBinary(checkExprVar("a"),
+						checkExprUnary(PLUS, checkExprVar("b")), STAR)).test(d0);
+	}
+
+	@Test
+	public void testStatementImageOut2() throws LexicalException, SyntaxException{
+		show("input: ");
+		show("Expecting: pass");
+		String input = """
+				identifier -> screen [(a * + b), (a * + b)];
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		StatementOutScreen d0 = (StatementOutScreen) decOrStatement.get(0);
+		checkStatementOutScreen(d0.name(),
+				checkExprBinary(checkExprVar("a"),
+						checkExprUnary(PLUS, checkExprVar("b")), STAR),
+				checkExprBinary(checkExprVar("a"),
+						checkExprUnary(PLUS, checkExprVar("b")), STAR)).test(d0);
+	}
+
+	@Test
+	public void testStatementImageOut3() throws LexicalException, SyntaxException{
+		show("input: ");
+		show("Expecting: pass");
+		String input = """
+				identifier -> screen;
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		StatementOutScreen d0 = (StatementOutScreen) decOrStatement.get(0);
+		checkStatementOutScreen(d0.name(),
+				checkExprEmpty(),
+				checkExprEmpty()).test(d0);
+	}
+
+	/* ----------Testcases for Expressions----------*/
+	@Test
+	public void testExpressionConditional1() throws LexicalException, SyntaxException{
+		show("input: ");
+		show("Expecting: pass");
+		String input = """
+				int Expression =(a * + b) | (a * + b) ? (a * + b) : (a * + b);
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		DecVar d0 = (DecVar) decOrStatement.get(0);
+		checkDecVar(Type.Int, "Expression",
+				checkExprConditional(
+						checkExprBinary(
+							checkExprBinary(checkExprVar("a"),
+									checkExprUnary(PLUS, checkExprVar("b")), STAR),
+							checkExprBinary(checkExprVar("a"),
+									checkExprUnary(PLUS, checkExprVar("b")), STAR), OR),
+						checkExprBinary(checkExprVar("a"),
+								checkExprUnary(PLUS, checkExprVar("b")), STAR),
+						checkExprBinary(checkExprVar("a"),
+								checkExprUnary(PLUS, checkExprVar("b")), STAR))).test(d0);
+	}
+
+	@Test
+	public void testExpressionConditional2() throws LexicalException, SyntaxException{
+		show("input: ");
+		show("Expecting: pass");
+		String input = """
+				int Expression =(a * + b) & (a * + b) ? (a * + b) : (a * + b);
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		DecVar d0 = (DecVar) decOrStatement.get(0);
+		checkDecVar(Type.Int, "Expression",
+				checkExprConditional(
+						checkExprBinary(
+								checkExprBinary(checkExprVar("a"),
+										checkExprUnary(PLUS, checkExprVar("b")), STAR),
+								checkExprBinary(checkExprVar("a"),
+										checkExprUnary(PLUS, checkExprVar("b")), STAR), AND),
+						checkExprBinary(checkExprVar("a"),
+								checkExprUnary(PLUS, checkExprVar("b")), STAR),
+						checkExprBinary(checkExprVar("a"),
+								checkExprUnary(PLUS, checkExprVar("b")), STAR))).test(d0);
+	}
+
+	@Test
+	public void testExpressionConditional3() throws LexicalException, SyntaxException{
+		show("input: ");
+		show("Expecting: pass");
+		String input = """
+				int Expression =(a * + b) == (a * + b) ? (a * + b) : (a * + b);
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		DecVar d0 = (DecVar) decOrStatement.get(0);
+		checkDecVar(Type.Int, "Expression",
+				checkExprConditional(
+						checkExprBinary(
+								checkExprBinary(checkExprVar("a"),
+										checkExprUnary(PLUS, checkExprVar("b")), STAR),
+								checkExprBinary(checkExprVar("a"),
+										checkExprUnary(PLUS, checkExprVar("b")), STAR), EQ),
+						checkExprBinary(checkExprVar("a"),
+								checkExprUnary(PLUS, checkExprVar("b")), STAR),
+						checkExprBinary(checkExprVar("a"),
+								checkExprUnary(PLUS, checkExprVar("b")), STAR))).test(d0);
+	}
+
+	@Test
+	public void testExpressionConditional4() throws LexicalException, SyntaxException{
+		show("input: ");
+		show("Expecting: pass");
+		String input = """
+				int Expression =(a * + b) != (a * + b) ? (a * + b) : (a * + b);
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		DecVar d0 = (DecVar) decOrStatement.get(0);
+		checkDecVar(Type.Int, "Expression",
+				checkExprConditional(
+						checkExprBinary(
+								checkExprBinary(checkExprVar("a"),
+										checkExprUnary(PLUS, checkExprVar("b")), STAR),
+								checkExprBinary(checkExprVar("a"),
+										checkExprUnary(PLUS, checkExprVar("b")), STAR), NEQ),
+						checkExprBinary(checkExprVar("a"),
+								checkExprUnary(PLUS, checkExprVar("b")), STAR),
+						checkExprBinary(checkExprVar("a"),
+								checkExprUnary(PLUS, checkExprVar("b")), STAR))).test(d0);
+	}
+
+	@Test
+	public void testExpressionConditional5() throws LexicalException, SyntaxException{
+		show("input: ");
+		show("Expecting: pass");
+		String input = """
+				int Expression =(a * + b) >= (a * + b) ? (a * + b) : (a * + b);
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		DecVar d0 = (DecVar) decOrStatement.get(0);
+		checkDecVar(Type.Int, "Expression",
+				checkExprConditional(
+						checkExprBinary(
+								checkExprBinary(checkExprVar("a"),
+										checkExprUnary(PLUS, checkExprVar("b")), STAR),
+								checkExprBinary(checkExprVar("a"),
+										checkExprUnary(PLUS, checkExprVar("b")), STAR), GE),
+						checkExprBinary(checkExprVar("a"),
+								checkExprUnary(PLUS, checkExprVar("b")), STAR),
+						checkExprBinary(checkExprVar("a"),
+								checkExprUnary(PLUS, checkExprVar("b")), STAR))).test(d0);
+	}
+
 	@Test
 	public void testExprHash() throws Scanner.LexicalException, SyntaxException {
 		String input = """
 				int hashTest = 3 # width # height;
 				""";
 		Parser parser = makeParser(input);
-		ASTNode node = parser.parse();
-		List<ASTNode> decOrStatement = ((Program) node).decOrStatement();
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
 		DecVar d0 = (DecVar) decOrStatement.get(0);
 		show(d0.expression().toString());
-		checkDecVar(Type.Int, "hashTest", checkExprHash(checkExprHash(checkExprIntLit(3), "width"), "height")).test(d0);
+		checkDecVar(Type.Int, "hashTest",
+				checkExprHash(
+						checkExprHash(
+								checkExprIntLit(3), "width"), "height")).test(d0);
 	}
 
+	@Test
+	public void testExprPixelSelector() throws Scanner.LexicalException, SyntaxException {
+		String input = """
+				int PixelSelector = X[(a * + b), (a * + b)];
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		DecVar d0 = (DecVar) decOrStatement.get(0);
+		show(d0.expression().toString());
+		checkDecVar(Type.Int, "PixelSelector",
+				checkExprPixelSelector(
+						checkExprVar("X"),
+						checkExprBinary(checkExprVar("a"),
+								checkExprUnary(PLUS, checkExprVar("b")), STAR),
+						checkExprBinary(checkExprVar("a"),
+								checkExprUnary(PLUS, checkExprVar("b")), STAR))).test(d0);
+	}
 
+	@Test
+	public void testExprPixelConstructor() throws Scanner.LexicalException, SyntaxException {
+		String input = """
+				int PixelConstructor = <<(a * + b), (a * + b), (a * + b)>>;
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		DecVar d0 = (DecVar) decOrStatement.get(0);
+		show(d0.expression().toString());
+		checkDecVar(Type.Int, "PixelConstructor",
+				checkExprPixelConstructor(
+						checkExprBinary(checkExprVar("a"),
+								checkExprUnary(PLUS, checkExprVar("b")), STAR),
+						checkExprBinary(checkExprVar("a"),
+								checkExprUnary(PLUS, checkExprVar("b")), STAR),
+						checkExprBinary(checkExprVar("a"),
+								checkExprUnary(PLUS, checkExprVar("b")), STAR))).test(d0);
+	}
 
+	@Test
+	public void testExprArg() throws Scanner.LexicalException, SyntaxException {
+		String input = """
+				int PixelConstructor = @ (a * + b);
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		DecVar d0 = (DecVar) decOrStatement.get(0);
+		show(d0.expression().toString());
+		checkDecVar(Type.Int, "PixelConstructor",
+				checkExprArg(
+						checkExprBinary(checkExprVar("a"),
+								checkExprUnary(PLUS, checkExprVar("b")), STAR))).test(d0);
+	}
 }

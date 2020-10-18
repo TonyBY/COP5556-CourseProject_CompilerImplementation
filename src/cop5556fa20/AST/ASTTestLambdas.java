@@ -28,7 +28,7 @@ public class ASTTestLambdas {
 			assertEquals(val,((ExprIntLit)enode).value()); 
 			return true; }; 
 	}
-	
+
 	
 	public static Predicate<ASTNode> checkExprConst(String name, int val){
 		return (enode) -> {
@@ -36,8 +36,14 @@ public class ASTTestLambdas {
 			assertEquals(name,((ExprConst)enode).name());
 			assertEquals(val,((ExprConst)enode).value()); 
 			return true; }; 
-	}		
-	
+	}
+
+	public static Predicate<ASTNode> checkExprEmpty(){
+		return (enode) -> {
+			assertEquals(ExprEmpty.class, enode.getClass());
+			return true; };
+	}
+
 	public static Predicate<ASTNode> checkExprBinary(Predicate<ASTNode> checke0, Predicate<ASTNode> checke1, Scanner.Kind opKind){
 		return (enode) -> {
 			assertEquals(ExprBinary.class, enode.getClass());
@@ -213,10 +219,12 @@ public class ASTTestLambdas {
 		};
 	}
 	
-	public static Predicate<ASTNode> checkStatementLoop(String name, Predicate<ASTNode> expression){
+	public static Predicate<ASTNode> checkStatementLoop(String name, Predicate<ASTNode> expression0,
+														Predicate<ASTNode> expression){
 		return (node) -> {
 			StatementLoop s = (StatementLoop)node;
 			assertEquals(name, s.name());
+			expression0.test(s.cond());
 			expression.test(s.e());
 			return true;
 		};
