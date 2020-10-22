@@ -156,8 +156,9 @@ public class Parser {
 	private DecImage imageDeclaration() throws SyntaxException, LexicalException {
 		show("imageDeclaration: " + t.kind());
 		Token first = t;
-		Token name = match(KW_image);
+
 		Type type = Type.Image;
+		match(KW_image);
 		Expression e0 = Expression.empty;
 		Expression e1 = Expression.empty;
 		Expression e2 = Expression.empty;
@@ -170,7 +171,7 @@ public class Parser {
 			match(RSQUARE);
 		}
 
-		match(IDENT);
+		Token name = match(IDENT);
 
 		if (t.isKind(LARROW) || t.isKind(ASSIGN)) {
 			op = t.kind();

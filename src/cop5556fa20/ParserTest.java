@@ -555,4 +555,86 @@ class ParserTest {
 						checkExprBinary(checkExprVar("a"),
 								checkExprUnary(PLUS, checkExprVar("b")), STAR))).test(d0);
 	}
+
+	@Test
+	public void testFailed0() throws Scanner.LexicalException, SyntaxException {
+		String input = """
+				image a;
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		DecImage d0 = (DecImage) decOrStatement.get(0);
+		checkDecImage(d0.name(),
+				checkExprEmpty(),
+				checkExprEmpty(),
+				NOP,
+				checkExprEmpty()).test(d0);
+	}
+
+	@Test
+	public void testFailed1() throws Scanner.LexicalException, SyntaxException {
+		String input = """
+				image im <- @0;
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		DecImage d0 = (DecImage) decOrStatement.get(0);
+		checkDecImage(d0.name(),
+				checkExprEmpty(),
+				checkExprEmpty(),
+				LARROW,
+				checkExprArg(
+						checkExprIntLit(0))).test(d0);
+	}
+
+	@Test
+	public void testFailed2() throws Scanner.LexicalException, SyntaxException {
+		String input = """
+				image [1000,2000] im <- @0;
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		DecImage d0 = (DecImage) decOrStatement.get(0);
+		checkDecImage(d0.name(),
+				checkExprIntLit(1000),
+				checkExprIntLit(2000),
+				LARROW,
+				checkExprArg(
+						checkExprIntLit(0))).test(d0);
+	}
+
+	@Test
+	public void testFailed3() throws Scanner.LexicalException, SyntaxException {
+		String input = """
+				image [1000,2000] im;
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		DecImage d0 = (DecImage) decOrStatement.get(0);
+		checkDecImage(d0.name(),
+				checkExprIntLit(1000),
+				checkExprIntLit(2000),
+				NOP,
+				checkExprEmpty()).test(d0);
+	}
+
+	@Test
+	public void testFailed4() throws Scanner.LexicalException, SyntaxException {
+		String input = """
+				image [1000,2000] im = im2;
+				""";
+		Parser parser = makeParser(input);
+		Program node = parser.parse();
+		List<ASTNode> decOrStatement = node.decOrStatement();
+		DecImage d0 = (DecImage) decOrStatement.get(0);
+		checkDecImage(d0.name(),
+				checkExprIntLit(1000),
+				checkExprIntLit(2000),
+				ASSIGN,
+				checkExprVar("im2")).test(d0);
+	}
 }
