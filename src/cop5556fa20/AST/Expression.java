@@ -16,23 +16,33 @@ package cop5556fa20.AST;
 
 import cop5556fa20.Scanner.Token;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class Expression extends ASTNode {
 	
 	public static final ExprEmpty empty = ExprEmpty.empty;
 	
 	Type type;  //NOT final.  Will be set during type checking in most cases
+	List<Type> defaultType;
 
 	public Expression(Token first) {
 		super(first);
 		this.type = null;
+		this.defaultType = new ArrayList<>();
 	}
 
 	public Type type() {
 		return type;
 	}
+	public List<Type> defaultType() {return defaultType;}
 
 	public void setType(Type type) {
 		this.type = type;
+	}
+
+	public void setDefaultType(List<Type> defaultType) {
+		this.defaultType = defaultType;
 	}
 
 
