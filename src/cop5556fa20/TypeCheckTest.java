@@ -713,6 +713,15 @@ class TypeCheckTest {
 	}
 
 	@Test
+	public void testStatementOutScreenPass6() throws Exception {
+		String input = """
+				string s = "Hello, World!";
+				s -> screen;
+				""";
+		pass(input);
+	}
+
+	@Test
 	public void testStatementOutScreenFail1() throws Exception {
 		String input = """
 				int im;

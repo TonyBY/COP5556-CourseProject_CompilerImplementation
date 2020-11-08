@@ -88,6 +88,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		show("decVar.expression(): " + decVar.expression());
 		show("decVar.type(): " + decVar.type());
 		if (decVar.expression() instanceof ExprEmpty || decVar.type() == decVar.expression().type()) {
+			show("Adding the decVar to the symbol table");
 			st.addDec(decVar.name(), decVar);
 			return null;
 		} else {
