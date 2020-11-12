@@ -887,7 +887,7 @@ class TypeCheckTest {
 	}
 
 	@Test
-	public void testFailedTestCate1() throws Exception {
+	public void testFailedTestCase1() throws Exception {
 		String input = """
 				int x;
 				x = 2 < 3  ? @0 : @1;
@@ -896,7 +896,7 @@ class TypeCheckTest {
 	}
 
 	@Test
-	public void testFailedTestCate2() throws Exception {
+	public void testFailedTestCase2() throws Exception {
 		String input = """
 				image im;
 				int p = im[@0,@1];
