@@ -330,14 +330,25 @@ public class TypeCheckVisitor implements ASTVisitor {
 		// TODO Auto-generated method stub
 
 		exprConditional.condition().setDefaultType(List.of(Type.Boolean));
+		List<Type> expectContextTList = exprConditional.defaultType();
+
 		if (exprConditional.trueCase() instanceof ExprArg && exprConditional.falseCase() instanceof ExprArg) {
-			exprConditional.trueCase().setDefaultType(List.of(Type.Int, Type.String));
-			exprConditional.falseCase().setDefaultType(List.of(Type.Int, Type.String));
+			exprConditional.trueCase().setDefaultType(expectContextTList);
+			exprConditional.falseCase().setDefaultType(expectContextTList);
 		} else if (exprConditional.trueCase() instanceof ExprArg) {
 			exprConditional.trueCase().setDefaultType(List.of((Type) exprConditional.falseCase().visit(this, arg)));
 		} else if (exprConditional.falseCase() instanceof ExprArg) {
 			exprConditional.falseCase().setDefaultType(List.of((Type) exprConditional.trueCase().visit(this, arg)));
 		}
+
+//		if (exprConditional.trueCase() instanceof ExprArg && exprConditional.falseCase() instanceof ExprArg) {
+//			exprConditional.trueCase().setDefaultType(List.of(Type.Int, Type.String));
+//			exprConditional.falseCase().setDefaultType(List.of(Type.Int, Type.String));
+//		} else if (exprConditional.trueCase() instanceof ExprArg) {
+//			exprConditional.trueCase().setDefaultType(List.of((Type) exprConditional.falseCase().visit(this, arg)));
+//		} else if (exprConditional.falseCase() instanceof ExprArg) {
+//			exprConditional.falseCase().setDefaultType(List.of((Type) exprConditional.trueCase().visit(this, arg)));
+//		}
 
 //		if (exprConditional.condition() instanceof ExprArg
 //				|| exprConditional.trueCase() instanceof ExprArg
@@ -571,13 +582,15 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public Object visitExprPixelSelector(ExprPixelSelector exprPixelSelector, Object arg) throws Exception {
 		// TODO Auto-generated method stub
-		if (exprPixelSelector.image() instanceof ExprArg
-				|| exprPixelSelector.X() instanceof ExprArg
-				|| exprPixelSelector.Y() instanceof ExprArg) {
-			String message = "One of the arguments is instance of ExprArg. Which is not allowed in ExprPixelSelector. " +
-					"Because one of the arguments is type of image.";
-			throw new TypeException(exprPixelSelector.first(), message);
-		}
+		List<Type> expectContextTList = exprPixelSelector.defaultType();
+
+//		if (exprPixelSelector.image() instanceof ExprArg
+//				|| exprPixelSelector.X() instanceof ExprArg
+//				|| exprPixelSelector.Y() instanceof ExprArg) {
+//			String message = "One of the arguments is instance of ExprArg. Which is not allowed in ExprPixelSelector. " +
+//					"Because one of the arguments is type of image.";
+//			throw new TypeException(exprPixelSelector.first(), message);
+//		}
 
 		show("exprPixelSelector.image(): " + exprPixelSelector.image());
 		show("exprPixelSelector.X(): " + exprPixelSelector.X());

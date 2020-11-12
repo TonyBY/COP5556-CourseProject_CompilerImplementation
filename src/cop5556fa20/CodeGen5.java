@@ -22,6 +22,12 @@ import org.objectweb.asm.*;
 import java.util.List;
 
 public class CodeGen5 implements ASTVisitor, Opcodes {
+	static final boolean doPrint = true;
+	private void show(Object input) {
+		if (doPrint) {
+			System.out.println(input.toString());
+		}
+	}
 	
 	final String className;
 	final boolean isInterface = false;

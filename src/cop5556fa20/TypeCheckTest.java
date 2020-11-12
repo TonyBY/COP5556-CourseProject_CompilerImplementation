@@ -173,6 +173,16 @@ class TypeCheckTest {
 	}
 
 	@Test
+	public void testdecVar_ExprConditional_Pass5() throws Exception {
+		String input = """
+				int a;
+				int b;
+				int x = (a == b) ? @0 : @1;
+				""";
+		pass(input);
+	}
+
+	@Test
 	public void testdecVar_ExprConditional_Fail1() throws Exception {
 		String input = """
 				int a;
@@ -209,16 +219,6 @@ class TypeCheckTest {
 		String input = """
 				int a;
 				int b;
-				int x = (a == b) ? @0 : @1;
-				""";
-		fail(input);
-	}
-
-	@Test
-	public void testdecVar_ExprConditional_Fail5() throws Exception {
-		String input = """
-				int a;
-				int b;
 				int c;
 				string d;
 				int x = (a == b) ? c : d;
@@ -227,11 +227,11 @@ class TypeCheckTest {
 	}
 
 	@Test
-	public void testdecVar_ExprConditional_Fail6() throws Exception {
+	public void testdecVar_ExprConditional_Fail5() throws Exception {
 		String input = """
 				int a;
 				int c;
-				string d;
+				int d;
 				int x = a ? c : d;
 				""";
 		fail(input);
@@ -532,18 +532,18 @@ class TypeCheckTest {
 	}
 
 	@Test
-	public void testdecVar_ExprPixelSelector_Fail1() throws Exception {
-		String input = """
-				int x = @0 [30, 40];
-				""";
-		fail(input);
-	}
-
-	@Test
-	public void testdecVar_ExprPixelSelector_Fail2() throws Exception {
+	public void testdecVar_ExprPixelSelector_pass3() throws Exception {
 		String input = """
 				image img;
 				int x = img [@0, @1];
+				""";
+		pass(input);
+	}
+
+	@Test
+	public void testdecVar_ExprPixelSelector_Fail1() throws Exception {
+		String input = """
+				int x = @0 [30, 40];
 				""";
 		fail(input);
 	}
@@ -884,5 +884,23 @@ class TypeCheckTest {
 				im =* [X, Y] :: 10;
 				""";
 		fail(input);
+	}
+
+	@Test
+	public void testFailedTestCate1() throws Exception {
+		String input = """
+				int x;
+				x = 2 < 3  ? @0 : @1;
+				""";
+		pass(input);
+	}
+
+	@Test
+	public void testFailedTestCate2() throws Exception {
+		String input = """
+				image im;
+				int p = im[@0,@1];
+				""";
+		pass(input);
 	}
 }
