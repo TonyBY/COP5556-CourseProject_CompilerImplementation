@@ -582,7 +582,6 @@ public class TypeCheckVisitor implements ASTVisitor {
 	@Override
 	public Object visitExprPixelSelector(ExprPixelSelector exprPixelSelector, Object arg) throws Exception {
 		// TODO Auto-generated method stub
-		List<Type> expectContextTList = exprPixelSelector.defaultType();
 
 //		if (exprPixelSelector.image() instanceof ExprArg
 //				|| exprPixelSelector.X() instanceof ExprArg
