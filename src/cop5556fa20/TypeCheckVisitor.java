@@ -212,7 +212,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 
 
 		show("name: " + name);
-		show("exT" + exT);
+		show("exT: " + exT);
 		show("eyT: " + eyT);
 		boolean statementOutScreenConstraint = false;
 

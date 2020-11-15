@@ -25,25 +25,28 @@ public abstract class Expression extends ASTNode {
 	
 	Type type;  //NOT final.  Will be set during type checking in most cases
 	List<Type> defaultType;
+	Object val;
 
 	public Expression(Token first) {
 		super(first);
 		this.type = null;
 		this.defaultType = new ArrayList<>();
+		this.val = null;
 	}
 
 	public Type type() {
 		return type;
 	}
 	public List<Type> defaultType() {return defaultType;}
+	public Object val() {return val;}
 
 	public void setType(Type type) {
 		this.type = type;
 	}
-
 	public void setDefaultType(List<Type> defaultType) {
 		this.defaultType = defaultType;
 	}
+	public void setVal(Object val) {this.val = val;}
 
 
 

@@ -15,6 +15,15 @@ import java.lang.reflect.InvocationTargetException;
 
 
 public class CodeGenUtils{
+	public final static String className = "cop5556fa20/CodeGenUtils";
+
+	public static String stringConcatenation(String string1, String string2) {
+		return string1 + string2;
+	}
+
+	public static boolean stringComparison(String string1, String string2) {
+		return string1 == string2;
+	}
 	
 
 
