@@ -168,6 +168,11 @@ public class CodeGen5 implements ASTVisitor, Opcodes {
 	@Override
 	public Object visitStatementOutScreen(StatementOutScreen statementOutScreen, Object arg) throws Exception {
 		String name = statementOutScreen.name();
+		Expression e0 = statementOutScreen.X();
+		Expression e1 = statementOutScreen.Y();
+		Type type0 = e0.type();
+		Type type1 = e1.type();
+
 		Dec dec = statementOutScreen.dec();
 		Type type = dec.type();
 		String desc;
@@ -188,6 +193,9 @@ public class CodeGen5 implements ASTVisitor, Opcodes {
 				mv.visitMethodInsn(INVOKESTATIC, LoggedIO.className, "intToScreen", LoggedIO.intToScreenSig,
 						isInterface);
 //				throw new UnsupportedOperationException("not yet implemented");
+			}
+			case Image -> {
+				throw new UnsupportedOperationException("not yet implemented");
 			}
 			default -> throw new UnsupportedOperationException("not yet implemented");
 		}
