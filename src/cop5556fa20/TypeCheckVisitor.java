@@ -111,7 +111,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 		decImage.height().setDefaultType(List.of(Type.Int, Type.Void));
 
 		if (decImage.op() == LARROW) {
-			decImage.source().setDefaultType(List.of(Type.String));
+			decImage.source().setDefaultType(List.of(Type.String, Type.Image));
 		}
 		if (decImage.op() == ASSIGN) {
 			decImage.source().setDefaultType(List.of(Type.Image));
@@ -141,7 +141,7 @@ public class TypeCheckVisitor implements ASTVisitor {
 
 		show("decImage.source().type(): " + decImage.source().type());
 
-		if (decImage.op() == LARROW && decImage.source().type() == Type.String) {
+		if (decImage.op() == LARROW && (decImage.source().type() == Type.String || decImage.source().type() == Type.Image)) {
 			constraint_4 = true;
 		}else if (decImage.op() == ASSIGN && decImage.source().type() == Type.Image){
 			constraint_4 = true;

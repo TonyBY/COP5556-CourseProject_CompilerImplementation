@@ -608,6 +608,24 @@ class TypeCheckTest {
 	}
 
 	@Test
+	public void testdecImagePass4() throws Exception {
+		String input = """
+    			image b;
+    			image a <- b;
+				""";
+		pass(input);
+	}
+
+	@Test
+	public void testdecImagePass5() throws Exception {
+		String input = """
+    			string b;
+    			image a <- b;
+				""";
+		pass(input);
+	}
+
+	@Test
 	public void testdecImageFail1() throws Exception {
 		String input = """
 				image x;
