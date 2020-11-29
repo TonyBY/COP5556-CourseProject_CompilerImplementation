@@ -24,6 +24,7 @@ import cop5556fa20.runtime.PLPImage.PLPImageException;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,6 +35,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static cop5556fa20.runtime.BufferedImageUtils.resizeBufferedImage;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -259,7 +261,9 @@ class CodeGen6Test {
 		String[] args = {ImageResources.urlTower};
 		genRun(input,args);
 		ArrayList<Object> expectedLog = new ArrayList<Object>();
-		PLPImage a = new PLPImage(BufferedImageUtils.fetchBufferedImage(args[0]), new Dimension(400,500));
+		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
+		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
+		PLPImage a = new PLPImage(resizedFetchedBufferedImage, new Dimension(400,500));
 		expectedLog.add(a);
 		show("a: " + a);
 		show("LoggedIO.globalLog: " + LoggedIO.globalLog);
@@ -278,7 +282,9 @@ class CodeGen6Test {
 		String[] args = {ImageResources.urlTower};
 		genRun(input,args);
 		ArrayList<Object> expectedLog = new ArrayList<Object>();
-		PLPImage b = new PLPImage(BufferedImageUtils.fetchBufferedImage(args[0]), new Dimension(400,500));
+		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
+		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
+		PLPImage b = new PLPImage(resizedFetchedBufferedImage, new Dimension(400,500));
 		expectedLog.add(b);
 		assertEquals(expectedLog, LoggedIO.globalLog);
 		keepFrames();
@@ -310,7 +316,9 @@ class CodeGen6Test {
 		String[] args = {ImageResources.urlTower};
 		genRun(input,args);
 		ArrayList<Object> expectedLog = new ArrayList<Object>();
-		PLPImage b = new PLPImage(BufferedImageUtils.fetchBufferedImage(args[0]), new Dimension(400,500));
+		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
+		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
+		PLPImage b = new PLPImage(resizedFetchedBufferedImage, new Dimension(400,500));
 		expectedLog.add(b);
 		assertEquals(expectedLog, LoggedIO.globalLog);
 		keepFrames();
@@ -326,7 +334,11 @@ class CodeGen6Test {
 		String[] args = {ImageResources.fileImage0};
 		genRun(input,args);
 		ArrayList<Object> expectedLog = new ArrayList<Object>();
-		PLPImage a = new PLPImage(BufferedImageUtils.fetchBufferedImage(args[0]), new Dimension(400,500));
+		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
+		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
+		PLPImage a = new PLPImage(resizedFetchedBufferedImage, new Dimension(400,500));
+		show("a.declaredSize: " + a.declaredSize);
+		show("a.image: " + a.image);
 		expectedLog.add(a);
 		assertEquals(expectedLog, LoggedIO.globalLog);
 		keepFrames();
@@ -388,7 +400,7 @@ class CodeGen6Test {
 		int w = source.getWidth();
 		int h = source.getHeight();
 		int size = w <=h ? w : h;
-		PLPImage overlay = new PLPImage(BufferedImageUtils.resizeBufferedImage(BufferedImageUtils.fetchBufferedImage(args[1]), size, size), new Dimension(size,size));
+		PLPImage overlay = new PLPImage(resizeBufferedImage(BufferedImageUtils.fetchBufferedImage(args[1]), size, size), new Dimension(size,size));
 		PLPImage checkerboard = new PLPImage(BufferedImageUtils.createBufferedImage(size, size), new Dimension(size,size));
 		int xoffset = (w-size)/2;
 		int yoffset = (h-size)/2;

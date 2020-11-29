@@ -243,6 +243,12 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
             e0.visit(this, type);
             e1.visit(this, type);
             mv.visitMethodInsn(INVOKESPECIAL, "java/awt/Dimension", "<init>", "(II)V", false);
+
+//            mv.visitInsn(DUP); //duplicat the top value so we only work on the copy
+//            mv.visitFieldInsn(GETSTATIC,"java/lang/System", "out", "Ljava/io/PrintStream;");//put System.out to operand stack
+//            mv.visitInsn(SWAP); // swap of the top two values of the opestack: value1 value2 => value2 value1
+//            mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/Object;)V");
+
             show("Initialized a java/awt/Dimension instance.");
         }
         else{
@@ -250,6 +256,18 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
         }
 //        mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getWidth", PLPImage.getWidthSig, false);
 //        mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getHeight", PLPImage.getHeightSig, false);
+
+        mv.visitInsn(DUP2);
+
+        //print the top values and remove from the stack
+        mv.visitFieldInsn(GETSTATIC,"java/lang/System", "out", "Ljava/io/PrintStream;");//put System.out to operand stack
+        mv.visitInsn(SWAP);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/Object;)V");
+
+        //print the second value and remove from the stack
+        mv.visitFieldInsn(GETSTATIC,"java/lang/System", "out", "Ljava/io/PrintStream;");//put System.out to operand stack
+        mv.visitInsn(SWAP);
+        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/Object;)V");
 
         mv.visitMethodInsn(INVOKESPECIAL, PLPImage.className, "<init>", "(Ljava/awt/image/BufferedImage;Ljava/awt/Dimension;)V", false);
         //        mv.visitVarInsn(ASTORE, decImage.slot);

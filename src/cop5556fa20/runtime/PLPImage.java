@@ -60,7 +60,7 @@ public class PLPImage {
 	//image is the image, it may be null.  
 	//Invariant:  if image is not null, and dimension is not null, then the image has size dimension.
 	public BufferedImage image;
-	final Dimension declaredSize; //declared size of image, or null if none
+	public final Dimension declaredSize; //declared size of image, or null if none
 	
 	
 	public PLPImage(BufferedImage image, Dimension declaredSize) {
