@@ -19,10 +19,13 @@ import cop5556fa20.Scanner.Token;
 public abstract class Dec extends ASTNode {
 	
 	final Type type;
+	public int slot;
 
 	public Dec(Token first, Type type) {
 		super(first);
 		this.type = type;
+		this.slot = 0;
+		this.isDec = true;
 	}
 
 	public Type type() {

@@ -142,6 +142,23 @@ class CodeGen5Test {
 		expectedLog.add(1024);
 		assertEquals(expectedLog, LoggedIO.globalLog);
 	}
+
+	@Test
+	public void decVar_var() throws Exception {
+		String className = "decVar_int";
+		String input = """
+				int a = 1024;
+				int s = a;
+				s -> screen;
+				""";
+		byte[] bytecode = genCode(input, className, false);
+		String[] args = {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(1024);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
 	
 	@Test
 	public void commandLineArg_string0() throws Exception {

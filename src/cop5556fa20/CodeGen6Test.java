@@ -47,7 +47,7 @@ class CodeGen6Test {
 	}
 
 
-	static boolean doKeepFrames = true;
+	static boolean doKeepFrames = false;
 	static void keepFrames() throws IOException {
 		if (doKeepFrames) {
 		        System.out.println("enter any char to close frames and exit");
@@ -58,7 +58,7 @@ class CodeGen6Test {
 	static boolean writeClassFile = true;
 	
 	/**
-	 * Generates and returns byte[] containing classfile implmenting given input program.
+	 * Generates and returns byte[] containing classfile implementing given input program.
 	 * 
 	 * Throws exceptions for Lexical, Syntax, and Type checking errors
 	 * 
@@ -100,7 +100,7 @@ class CodeGen6Test {
 	
 	/**
 	 * Dynamically loads and executes the main method defined in the provided bytecode.
-	 * If there are no command line arguments, commandLineArgs shoudl be an empty string (not null).
+	 * If there are no command line arguments, commandLineArgs should be an empty string(i.e., String[0]) (not null).
 	 * 
 	 * @param className
 	 * @param bytecode

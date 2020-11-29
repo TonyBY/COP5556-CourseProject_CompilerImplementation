@@ -17,20 +17,20 @@ package cop5556fa20.AST;
 import cop5556fa20.Scanner.Token;
 
 public abstract class Statement extends ASTNode{
-	
-	Dec dec; 
+
+//	Dec dec;
 
 	public Statement(Token first) {
 		super(first);
 	}
 
-	public Dec dec() {
-		return dec;
-	}
+//	public Dec dec() {
+//		return dec;
+//	}
 
-	public void setDec(Dec dec) {
-		this.dec = dec;
-	}
+//	public void setDec(Dec dec) {
+//		this.dec = dec;
+//	}
 
 	@Override
 	public int hashCode() {

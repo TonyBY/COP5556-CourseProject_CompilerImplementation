@@ -16,7 +16,9 @@ package cop5556fa20;
 
 import cop5556fa20.AST.Type;
 import cop5556fa20.AST.*;
+import cop5556fa20.runtime.BufferedImageUtils;
 import cop5556fa20.runtime.LoggedIO;
+import cop5556fa20.runtime.PLPImage;
 import org.objectweb.asm.*;
 
 import java.util.List;
@@ -35,6 +37,9 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
     final boolean isInterface = false;
     ClassWriter cw;
     MethodVisitor mv;
+
+    private int arg_slot = 0;
+    private int slot = 1;  // initialize slot number for local variables
 
     public CodeGenVisitorComplete(String className) {
         super();
@@ -67,7 +72,15 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
         // visit children to add instructions to method
         List<ASTNode> nodes = program.decOrStatement();
         for (ASTNode node : nodes) {
-            node.visit(this, null);
+            if (node.isDec) {
+                show("node.isDec");
+                Dec dec = (Dec) node;
+                dec.slot = slot;
+                dec.visit(this, arg);
+                slot++;
+            } else {
+                node.visit(this, null);
+            }
         }
         // add  required (by the JVM) return statement to main
         mv.visitInsn(RETURN);
@@ -129,7 +142,90 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
     @Override
     public Object visitDecImage(DecImage decImage, Object arg) throws Exception {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("not yet implemented");
+        String imgName = decImage.name();
+        Expression e0 = decImage.width();
+        Expression e1 = decImage.height();
+        Expression e2 = decImage.source();
+        Kind op = decImage.op();
+        Type type = decImage.type();
+        Type type0 = e0.type();
+        Type type1 = e1.type();
+        Type type2 = e2.type();
+        String desc;
+
+        if (type == Type.Image) {desc = "Lcop5556fa20/runtime/PLPImage;";}
+        else {throw new UnsupportedOperationException("visitDecImage can only be type of Image. Received: " + type);}
+
+        FieldVisitor fieldVisitor = cw.visitField(ACC_STATIC, imgName, desc, null, null);
+        fieldVisitor.visitEnd();
+
+        mv.visitTypeInsn(NEW, PLPImage.className);
+        mv.visitInsn(DUP);
+//        mv.visitInsn(ACONST_NULL);
+//        mv.visitInsn(ACONST_NULL);
+//        mv.visitMethodInsn(INVOKESPECIAL, PLPImage.className, "<init>", "(Ljava/awt/image/BufferedImage;Ljava/awt/Dimension;)V", false);
+//        mv.visitVarInsn(ASTORE, decImage.slot);
+//        mv.visitVarInsn(ALOAD, decImage.slot);
+
+//        mv.visitFieldInsn(PUTSTATIC, className, imgName, desc);
+        show("Initialized a PLP instance.");
+
+
+        switch (op) {
+            case LARROW -> {
+                e2.visit(this, type);
+                if (type2 == Type.String) {
+                    mv.visitMethodInsn(INVOKESTATIC, BufferedImageUtils.className, "fetchBufferedImage", "(Ljava/lang/String;)Ljava/awt/image/BufferedImage;", false);
+                    if (e0 != Expression.empty) {
+                        e0.visit(this, type);
+                        e1.visit(this, type);
+                        mv.visitMethodInsn(INVOKESTATIC, BufferedImageUtils.className, "resizeBufferedImage", "(Ljava/awt/image/BufferedImage;II)Ljava/awt/image/BufferedImage;", false);
+                    }
+                }
+                if (type2 == Type.Image) {
+                    mv.visitMethodInsn(INVOKESTATIC, BufferedImageUtils.className, "copyBufferedImage", "(Ljava/awt/image/BufferedImage;)Ljava/awt/image/BufferedImage;", false);
+                    if (e0 != Expression.empty) {
+                        e0.visit(this, type);
+                        e1.visit(this, type);
+                        mv.visitMethodInsn(INVOKESTATIC, BufferedImageUtils.className, "resizeBufferedImage", "(Ljava/awt/image/BufferedImage;II)Ljava/awt/image/BufferedImage;", false);
+                    }
+                }
+            }
+            case ASSIGN -> {
+                e2.visit(this, type);
+                if (e0 != Expression.empty) {
+
+                }
+            }
+            default -> mv.visitInsn(ACONST_NULL);
+        }
+
+        mv.visitInsn(ACONST_NULL);
+        mv.visitMethodInsn(INVOKESPECIAL, PLPImage.className, "<init>", "(Ljava/awt/image/BufferedImage;Ljava/awt/Dimension;)V", false);
+        mv.visitVarInsn(ASTORE, decImage.slot);
+//        mv.visitFieldInsn(PUTFIELD, PLPImage.className, "image", "Ljava/awt/image/BufferedImage;");
+//        mv.visitVarInsn(ALOAD, decImage.slot);
+//
+//        mv.visitTypeInsn(NEW, "java/awt/Dimension");
+//        mv.visitInsn(DUP);
+//        if (e0 != Expression.empty && e1 != Expression.empty) {
+//            e0.visit(this, type);
+//            e1.visit(this, type);
+//            mv.visitMethodInsn(INVOKESPECIAL, PLPImage.className, "<init>", "(Ljava/awt/image/BufferedImage;Ljava/awt/Dimension;)V", false);
+//        }
+//        else{
+//            mv.visitInsn(ACONST_NULL);
+//        }
+//        mv.visitFieldInsn(PUTFIELD, PLPImage.className, "declaredSize", "Ljava/awt/Dimension;");
+//        mv.visitVarInsn(ALOAD, decImage.slot);
+//
+////        mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getWidth", PLPImage.getWidthSig, false);
+////        mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getHeight", PLPImage.getHeightSig, false);
+//
+//        mv.visitVarInsn(ASTORE, decImage.slot);
+        return null;
+
+//        throw new UnsupportedOperationException("not yet implemented");
     }
 
     @Override
@@ -195,7 +291,14 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
 //				throw new UnsupportedOperationException("not yet implemented");
             }
             case Image -> {
-                throw new UnsupportedOperationException("not yet implemented");
+//                desc = PLPImage.desc;
+                show("screen out!");
+                mv.visitVarInsn(ALOAD, dec.slot);
+                mv.visitVarInsn(BIPUSH, 0);
+                mv.visitVarInsn(BIPUSH, 0);
+                mv.visitMethodInsn(INVOKESTATIC, LoggedIO.className, "imageToScreen", LoggedIO.imageToScreenSig,
+                        isInterface);
+//                throw new UnsupportedOperationException("not yet implemented");
             }
             default -> throw new UnsupportedOperationException("not yet implemented");
         }
@@ -209,7 +312,7 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
         // TODO Auto-generated method stub
         Type type = exprArg.type();
         Expression e = exprArg.e();
-        mv.visitVarInsn(ALOAD, 0);
+        mv.visitVarInsn(ALOAD, arg_slot); // arg_slot = 0
         e.visit(this, arg);
         mv.visitInsn(AALOAD);
 
@@ -484,6 +587,7 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
         // TODO Auto-generated method stub
         String name = exprVar.name();
         Type type = exprVar.type();
+        Dec dec = exprVar.dec();
 
         String desc;
         switch (type) {
@@ -495,12 +599,15 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
                 desc = "I";
 //				throw new UnsupportedOperationException("not yet implemented");
             }
+            case Image -> {
+//                desc = "Lcop5556fa20/runtime/PLPImage;";
+                mv.visitVarInsn(ALOAD, dec.slot);
+                return null;
+            }
             default -> throw new UnsupportedOperationException("not yet implemented");
         }
 
         mv.visitFieldInsn(GETSTATIC, className, name, desc);
-
-
         return null;
 
 //		throw new UnsupportedOperationException("not yet implemented");

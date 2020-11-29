@@ -20,9 +20,28 @@ public abstract class ASTNode {
 	
 	final Token first;
 
+	public boolean isDec;
+
+	public Type type;
+	public Type getType(){
+		return type;
+	}
+
+	public void setType(Type t1){
+		type = t1;
+	}
+
+	public Dec dec;
+	public Dec dec(){
+		return dec;
+	}
+
+	public void setDec(Dec dec) {this.dec = dec;}
+
 	public ASTNode(Token first) {
 		super();
 		this.first = first;
+		this.isDec = false;
 	}
 	
 	public Token first() {
