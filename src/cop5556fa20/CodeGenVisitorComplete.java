@@ -200,29 +200,25 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
             default -> mv.visitInsn(ACONST_NULL);
         }
 
-        mv.visitInsn(ACONST_NULL);
+//        mv.visitFieldInsn(PUTFIELD, PLPImage.className, "image", "Ljava/awt/image/BufferedImage;");
+
+        if (e0 != Expression.empty && e1 != Expression.empty) {
+            mv.visitTypeInsn(NEW, "java/awt/Dimension");
+            mv.visitInsn(DUP);
+            e0.visit(this, type);
+            e1.visit(this, type);
+            mv.visitMethodInsn(INVOKESPECIAL, PLPImage.className, "<init>", "(Ljava/awt/image/BufferedImage;Ljava/awt/Dimension;)V", false);
+        }
+        else{
+            mv.visitInsn(ACONST_NULL);
+        }
+//        mv.visitFieldInsn(PUTFIELD, PLPImage.className, "declaredSize", "Ljava/awt/Dimension;");
+
+//        mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getWidth", PLPImage.getWidthSig, false);
+//        mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getHeight", PLPImage.getHeightSig, false);
+
         mv.visitMethodInsn(INVOKESPECIAL, PLPImage.className, "<init>", "(Ljava/awt/image/BufferedImage;Ljava/awt/Dimension;)V", false);
         mv.visitVarInsn(ASTORE, decImage.slot);
-//        mv.visitFieldInsn(PUTFIELD, PLPImage.className, "image", "Ljava/awt/image/BufferedImage;");
-//        mv.visitVarInsn(ALOAD, decImage.slot);
-//
-//        mv.visitTypeInsn(NEW, "java/awt/Dimension");
-//        mv.visitInsn(DUP);
-//        if (e0 != Expression.empty && e1 != Expression.empty) {
-//            e0.visit(this, type);
-//            e1.visit(this, type);
-//            mv.visitMethodInsn(INVOKESPECIAL, PLPImage.className, "<init>", "(Ljava/awt/image/BufferedImage;Ljava/awt/Dimension;)V", false);
-//        }
-//        else{
-//            mv.visitInsn(ACONST_NULL);
-//        }
-//        mv.visitFieldInsn(PUTFIELD, PLPImage.className, "declaredSize", "Ljava/awt/Dimension;");
-//        mv.visitVarInsn(ALOAD, decImage.slot);
-//
-////        mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getWidth", PLPImage.getWidthSig, false);
-////        mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getHeight", PLPImage.getHeightSig, false);
-//
-//        mv.visitVarInsn(ASTORE, decImage.slot);
         return null;
 
 //        throw new UnsupportedOperationException("not yet implemented");
