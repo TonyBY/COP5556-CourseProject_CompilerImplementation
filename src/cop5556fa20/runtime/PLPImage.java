@@ -47,6 +47,11 @@ public class PLPImage {
 		}
 	}
 
+	public static final String getthrowPLPImageExceptionSig = "(IILjava/lang/String;)V";
+	public static void throwPLPImageException(int line, int posInLine, String message) throws PLPImageException {
+		throw new PLPImageException(line, posInLine, message);
+	}
+
 	public static final  String className = "cop5556fa20/runtime/PLPImage";
 	public static final String desc = "Lcop5556fa20/runtime/PLPImage;";
 	

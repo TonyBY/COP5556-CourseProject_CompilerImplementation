@@ -3,7 +3,7 @@ package cop5556fa20.resources;
 public class ImageResources {
 	
 	//fileImage0 should be a fully qualified file name of an image on your local file system.
-	public static final String fileImage0 = "";
+	public static final String fileImage0 = "/Users/tony/Desktop/Screen Shot 2020-11-06 at 16.21.42.png";
 	//fileImage1 should be a fully qualified file name of an image on your local file system.
 	public static final String fileImage1 = "";
 	public static final String urlTower= 
