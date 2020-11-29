@@ -269,7 +269,7 @@ class CodeGen6Test {
 
 
 	@Test
-	public void loadImage_url_two_dec_resize_image() throws Exception {
+	public void loadImage_url_two_dec_resize_LARROW_image() throws Exception {
 		String input = """
 				image a <- @0;
 				image[400, 500] b <- a;
@@ -278,7 +278,7 @@ class CodeGen6Test {
 		String[] args = {ImageResources.urlTower};
 		genRun(input,args);
 		ArrayList<Object> expectedLog = new ArrayList<Object>();
-		PLPImage b = new PLPImage(BufferedImageUtils.fetchBufferedImage(args[0]),new Dimension(400,500));
+		PLPImage b = new PLPImage(BufferedImageUtils.fetchBufferedImage(args[0]), new Dimension(400,500));
 		expectedLog.add(b);
 		assertEquals(expectedLog, LoggedIO.globalLog);
 		keepFrames();
@@ -310,7 +310,7 @@ class CodeGen6Test {
 		String[] args = {ImageResources.urlTower};
 		genRun(input,args);
 		ArrayList<Object> expectedLog = new ArrayList<Object>();
-		PLPImage b = new PLPImage(BufferedImageUtils.fetchBufferedImage(args[0]),new Dimension(400,500));
+		PLPImage b = new PLPImage(BufferedImageUtils.fetchBufferedImage(args[0]), new Dimension(400,500));
 		expectedLog.add(b);
 		assertEquals(expectedLog, LoggedIO.globalLog);
 		keepFrames();
@@ -326,7 +326,7 @@ class CodeGen6Test {
 		String[] args = {ImageResources.fileImage0};
 		genRun(input,args);
 		ArrayList<Object> expectedLog = new ArrayList<Object>();
-		PLPImage a = new PLPImage(BufferedImageUtils.fetchBufferedImage(args[0]),new Dimension(400,500));
+		PLPImage a = new PLPImage(BufferedImageUtils.fetchBufferedImage(args[0]), new Dimension(400,500));
 		expectedLog.add(a);
 		assertEquals(expectedLog, LoggedIO.globalLog);
 		keepFrames();
