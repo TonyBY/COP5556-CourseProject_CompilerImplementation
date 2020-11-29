@@ -286,7 +286,7 @@ class CodeGen6Test {
 
 
 	@Test
-	public void loadImage_url_two_dec_resize_EQ() throws Exception {
+	public void loadImage_url_two_dec_resize_EQ_fail() throws Exception {
 		String input = """
 				image a <- @0;
 				image[400, 500] b = a;
@@ -297,6 +297,22 @@ class CodeGen6Test {
 			genRun(input,args);
 		});
 		show(exception);
+		keepFrames();
+	}
+
+	@Test
+	public void loadImage_url_two_dec_resize_EQ_pass() throws Exception {
+		String input = """
+				image [400, 500] a <- @0;
+				image[400, 500] b = a;
+				b -> screen;
+				""";
+		String[] args = {ImageResources.urlTower};
+		genRun(input,args);
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		PLPImage b = new PLPImage(BufferedImageUtils.fetchBufferedImage(args[0]),new Dimension(400,500));
+		expectedLog.add(b);
+		assertEquals(expectedLog, LoggedIO.globalLog);
 		keepFrames();
 	}
 
