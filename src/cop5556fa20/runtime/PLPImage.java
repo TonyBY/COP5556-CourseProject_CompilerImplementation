@@ -47,7 +47,7 @@ public class PLPImage {
 		}
 	}
 
-	public static final String getthrowPLPImageExceptionSig = "(IILjava/lang/String;)V";
+	public static final String throwPLPImageExceptionSig = "(IILjava/lang/String;)V";
 	public static void throwPLPImageException(int line, int posInLine, String message) throws PLPImageException {
 		throw new PLPImageException(line, posInLine, message);
 	}

@@ -171,10 +171,6 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
 
 //        mv.visitFieldInsn(PUTFIELD, PLPImage.className, "declaredSize", "Ljava/awt/Dimension;");
 
-        Label setTrue_width = new Label();
-        Label endEB_width = new Label();
-        Label setTrue_height = new Label();
-        Label endEB_height = new Label();
         switch (op) {
             case LARROW -> {
                 e2.visit(this, type);
@@ -187,49 +183,50 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
                     }
                 }
                 if (type2 == Type.Image) {
+                    mv.visitFieldInsn(GETFIELD, PLPImage.className, "image", "Ljava/awt/image/BufferedImage;");
+                    mv.visitMethodInsn(INVOKESTATIC, BufferedImageUtils.className, "copyBufferedImage", "(Ljava/awt/image/BufferedImage;)Ljava/awt/image/BufferedImage;", false);
                     if (e0 != Expression.empty) {
-                        e2.visit(this, type);
-                        mv.visitFieldInsn(INVOKEVIRTUAL, PLPImage.className, "getWidth", PLPImage.getWidthSig);
-                        mv.visitJumpInsn(IFNULL, setTrue_width);
-                        mv.visitJumpInsn(GOTO, endEB_width);
-                        mv.visitLabel(setTrue_width);
-                        e2.visit(this, type);
-                        mv.visitFieldInsn(INVOKEVIRTUAL, PLPImage.className, "getHeight", PLPImage.getHeightSig);
-                        mv.visitJumpInsn(IFNULL, setTrue_height);
-                        mv.visitLabel(endEB_width);
-                        mv.visitLdcInsn(e2.first().line());
-                        mv.visitLdcInsn(e2.first().posInLine());
-                        mv.visitLdcInsn("Cannot resize the image. It has been declared with size.");
-                        mv.visitFieldInsn(INVOKEVIRTUAL, PLPImage.className, "throwPLPImageException", PLPImage.getHeightSig);
-                        mv.visitLabel(setTrue_height);
-                        e2.visit(this, type);
-                        mv.visitFieldInsn(GETFIELD, PLPImage.className, "image", "Ljava/awt/image/BufferedImage;");
-                        mv.visitMethodInsn(INVOKESTATIC, BufferedImageUtils.className, "copyBufferedImage", "(Ljava/awt/image/BufferedImage;)Ljava/awt/image/BufferedImage;", false);
+                        e0.visit(this, type);
+                        e1.visit(this, type);
                         mv.visitMethodInsn(INVOKESTATIC, BufferedImageUtils.className, "resizeBufferedImage", "(Ljava/awt/image/BufferedImage;II)Ljava/awt/image/BufferedImage;", false);
-                    } else{
-                        mv.visitFieldInsn(GETFIELD, PLPImage.className, "image", "Ljava/awt/image/BufferedImage;");
-                        mv.visitMethodInsn(INVOKESTATIC, BufferedImageUtils.className, "copyBufferedImage", "(Ljava/awt/image/BufferedImage;)Ljava/awt/image/BufferedImage;", false);
                     }
                 }
             }
             case ASSIGN -> {
+                Label setTrue_width = new Label();
+                Label setTrue_height = new Label();
+                Label endEB = new Label();
                 if (e0 != Expression.empty) {
+                    int line = e2.first().line();
+                    int posInLine = e2.first().posInLine();
+                    String message = "Cannot assign the image. Size doesn't match.";
                     e2.visit(this, type);
-                    mv.visitFieldInsn(INVOKEVIRTUAL, PLPImage.className, "getWidth", PLPImage.getWidthSig);
+                    mv.visitLdcInsn(line);
+                    mv.visitLdcInsn(posInLine);
+                    mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getWidthThrows", PLPImage.getWidthThrowsSig, false);
                     e0.visit(this, type);
-                    mv.visitJumpInsn(IF_ICMPNE, setTrue_width);
-                    mv.visitJumpInsn(GOTO, endEB_width);
+                    mv.visitJumpInsn(IF_ICMPEQ, setTrue_width);
+                    mv.visitLdcInsn(line);
+                    mv.visitLdcInsn(posInLine);
+                    mv.visitLdcInsn(message);
+                    mv.visitMethodInsn(INVOKESTATIC, PLPImage.className, "throwPLPImageException", PLPImage.throwPLPImageExceptionSig, false);
+                    mv.visitJumpInsn(GOTO, endEB);
+
                     mv.visitLabel(setTrue_width);
                     e2.visit(this, type);
-                    mv.visitFieldInsn(INVOKEVIRTUAL, PLPImage.className, "getHeight", PLPImage.getHeightSig);
+                    mv.visitLdcInsn(line);
+                    mv.visitLdcInsn(posInLine);
+                    mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getHeightThrows", PLPImage.getHeightThrowsSig, false);
                     e1.visit(this, type);
-                    mv.visitJumpInsn(IF_ICMPNE, setTrue_height);
-                    mv.visitLabel(endEB_width);
-                    mv.visitLdcInsn(e2.first().line());
-                    mv.visitLdcInsn(e2.first().posInLine());
-                    mv.visitLdcInsn("Cannot assign the image. Dimension does not match.");
-                    mv.visitFieldInsn(INVOKEVIRTUAL, PLPImage.className, "throwPLPImageException", PLPImage.getHeightSig);
+                    mv.visitJumpInsn(IF_ICMPEQ, setTrue_height);
+                    mv.visitLdcInsn(line);
+                    mv.visitLdcInsn(posInLine);
+                    mv.visitLdcInsn(message);
+                    mv.visitMethodInsn(INVOKESTATIC, PLPImage.className, "throwPLPImageException", PLPImage.throwPLPImageExceptionSig, false);
+                    mv.visitJumpInsn(GOTO, endEB);
+
                     mv.visitLabel(setTrue_height);
+                    mv.visitLabel(endEB);
                 }
                 e2.visit(this, type);
                 mv.visitFieldInsn(GETFIELD, PLPImage.className, "image", "Ljava/awt/image/BufferedImage;");
