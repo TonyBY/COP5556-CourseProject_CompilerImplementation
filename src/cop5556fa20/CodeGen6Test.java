@@ -21,6 +21,7 @@ import cop5556fa20.runtime.BufferedImageUtils;
 import cop5556fa20.runtime.LoggedIO;
 import cop5556fa20.runtime.PLPImage;
 import cop5556fa20.runtime.PLPImage.PLPImageException;
+import cop5556fa20.runtime.PixelOps;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
@@ -111,6 +112,8 @@ class CodeGen6Test {
 	 */
 	void runCode(String className, byte[] bytecode, String[] commandLineArgs) throws Exception  {
 		LoggedIO.clearGlobalLog(); //initialize log used for testing.
+		PLPImage.clearGlobalLog();
+		PixelOps.clearGlobalLog();
 		DynamicClassLoader loader = new DynamicClassLoader(Thread.currentThread().getContextClassLoader());
 		Class<?> testClass = loader.define(className, bytecode);
 		@SuppressWarnings("rawtypes")
@@ -535,6 +538,104 @@ class CodeGen6Test {
 		keepFrames();
 	}
 
+	@Test void hashWidthHeight_1() throws Exception {
+		String input = """
+				image [400, 500] a <- @0;
+				int b = a#width;
+				int c = a#height
+				""";
+		String[] args = {ImageResources.urlTower};
+		genRun(input,args);
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+//		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
+//		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
+//		PLPImage a = new PLPImage(resizedFetchedBufferedImage, new Dimension(400,500));
+//		int b = a.getWidth();
+//		int c = a.getHeight();
+//		expectedLog.add(b);
+//		expectedLog.add(c);
+		expectedLog.add(400);
+		expectedLog.add(500);
+		assertEquals(expectedLog, PLPImage.globalLog);
+	}
+
+	@Test void hashWidthHeight_2() throws Exception {
+		String input = """
+				image [400, 500] a;
+				int b = a#width;
+				int c = a#height
+				""";
+		String[] args = {ImageResources.urlTower};
+		genRun(input,args);
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+//		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
+//		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
+//		PLPImage a = new PLPImage(resizedFetchedBufferedImage, new Dimension(400,500));
+//		int b = a.getWidth();
+//		int c = a.getHeight();
+//		expectedLog.add(b);
+//		expectedLog.add(c);
+		expectedLog.add(400);
+		expectedLog.add(500);
+		assertEquals(expectedLog, PLPImage.globalLog);
+	}
+
+	@Test void hashWidthHeight_3() throws Exception {
+		String input = """
+				image a <- @0;
+				int b = a#width;
+				int c = a#height
+				""";
+		String[] args = {ImageResources.urlTower};
+		genRun(input,args);
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+//		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
+//		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
+//		PLPImage a = new PLPImage(resizedFetchedBufferedImage, new Dimension(400,500));
+//		int b = a.getWidth();
+//		int c = a.getHeight();
+//		expectedLog.add(b);
+//		expectedLog.add(c);
+		expectedLog.add(400);
+		expectedLog.add(500);
+		assertEquals(expectedLog, PLPImage.globalLog);
+	}
+
+	@Test void hashRGB_Constructed() throws Exception {
+		String input = """
+				int pixel = <<1, 2, 3>>
+				int r = pixel#Red;
+				int g = pixel#Green;
+				int b = pixel#Blue;
+				""";
+		String[] args = {ImageResources.urlTower};
+		genRun(input,args);
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+//		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
+//		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
+//		PLPImage a = new PLPImage(resizedFetchedBufferedImage, new Dimension(400,500));
+//		int pixel = a.selectPixel(100, 100);
+//		int r = PixelOps.getRed(pixel);
+//		int g = PixelOps.getGreen(pixel);
+//		int b = PixelOps.getBlue(pixel);
+		expectedLog.add(1);
+		expectedLog.add(2);
+		expectedLog.add(3);
+		assertEquals(expectedLog, PLPImage.globalLog);
+	}
+
+	@Test void hashWidthfail() throws Exception {
+		String input = """
+				image a;
+				int b = a#width;
+				""";
+		Exception exception = assertThrows(PLPImageException.class, () -> {
+			genRun(input);
+		});
+		show(exception);	
+		keepFrames();
+	}
+
 	@Test
 	public void loopExampleFromDesc() throws Exception {
 		String input = """
@@ -556,7 +657,7 @@ class CodeGen6Test {
 		}
 		ArrayList<Object> expectedLog = new ArrayList<Object>();
 		expectedLog.add(a);
-		assertEquals(expectedLog, LoggedIO.globalLog);		
+		assertEquals(expectedLog, LoggedIO.globalLog);
 		keepFrames();
 	}
 
@@ -582,7 +683,7 @@ class CodeGen6Test {
 				checkerboard = *[X,Y]: (X%a < b &  Y%a < b) | (b <= X%a  & b <= Y%a)  : overlay[X,Y];
 				checkerboard -> screen;
 				""";
-	    String[] args = {ImageResources.urlKanapaha, ImageResources.urlTower};
+		String[] args = {ImageResources.urlKanapaha, ImageResources.urlTower};
 		genRun(input, args);
 		ArrayList<Object> expectedLog = new ArrayList<Object>();
 		PLPImage source = new PLPImage(BufferedImageUtils.fetchBufferedImage(args[0]), null);
@@ -611,18 +712,4 @@ class CodeGen6Test {
 		assertEquals(expectedLog, LoggedIO.globalLog);
 		keepFrames();
 	}
-
-	@Test void hashWidthfail() throws Exception {
-		String input = """
-				image a;
-				int b = a#width;
-				""";
-		Exception exception = assertThrows(PLPImageException.class, () -> {
-			genRun(input);
-		});
-		show(exception);	
-		keepFrames();
-	}
-	
-
 }

@@ -15,6 +15,7 @@ package cop5556fa20.runtime;
 
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 
@@ -33,7 +34,12 @@ import java.util.Arrays;
  *
  */
 public class PLPImage {
-	
+	public static final ArrayList<Object> globalLog = new ArrayList<Object>();
+	public static void clearGlobalLog() {
+		globalLog.clear();
+	}
+
+
 	@SuppressWarnings("serial")
 	public static class PLPImageException extends Exception {
 		
@@ -80,11 +86,14 @@ public class PLPImage {
 	public static final String getWidthThrowsSig = "(II)I";
 	public int getWidthThrows(int line, int posInLine) throws PLPImageException {
 		if(declaredSize != null) {
+			globalLog.add(declaredSize.width);
 			return declaredSize.width;
 		}
 		if (image != null) {
+			globalLog.add(image.getWidth());
 			return image.getWidth();
 		}
+		globalLog.add(null);
 		throw new PLPImageException(line, posInLine, "attempting to get width of uninitialized image");
 	}
 	
@@ -99,11 +108,14 @@ public class PLPImage {
 	public static final String getHeightThrowsSig = "(II)I";
 	public int getHeightThrows(int line, int posInLine) throws PLPImageException {
 		if(declaredSize != null) {
+			globalLog.add(declaredSize.height);
 			return declaredSize.height;
 		}
 		if (image != null) {
+			globalLog.add(image.getHeight());
 		return image.getHeight();
 		}
+		globalLog.add(null);
 		throw new PLPImageException(line, posInLine, "attempting to get height of uninitialized image");
 	}
 

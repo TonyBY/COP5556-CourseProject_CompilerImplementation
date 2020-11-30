@@ -19,6 +19,7 @@ import cop5556fa20.AST.*;
 import cop5556fa20.runtime.BufferedImageUtils;
 import cop5556fa20.runtime.LoggedIO;
 import cop5556fa20.runtime.PLPImage;
+import cop5556fa20.runtime.PixelOps;
 import org.objectweb.asm.*;
 
 import java.util.List;
@@ -449,6 +450,18 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
     }
 
     @Override
+    public Object visitStatementLoop(StatementLoop statementLoop, Object arg) throws Exception {
+//        String name = statementLoop.name();
+//        Expression e0 = statementLoop.cond();
+//        Expression e1 = statementLoop.e();
+//        String desc = "Lcop5556fa20/runtime/PLPImage;";
+//
+//
+//        return null;
+        throw new UnsupportedOperationException("not yet implemented");
+    }
+
+    @Override
     public Object visitStatementOutFile(StatementOutFile statementOutFile, Object arg) throws Exception {
         String name = statementOutFile.name();
         Expression e0 = statementOutFile.filename();
@@ -848,21 +861,32 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
 
     @Override
     public Object visitExprPixelConstructor(ExprPixelConstructor exprPixelConstructor, Object arg) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("not yet implemented");
+        Expression e0 = exprPixelConstructor.redExpr();
+        Expression e1 = exprPixelConstructor.greenExpr();
+        Expression e2 = exprPixelConstructor.blueExpr();
+
+        e0.visit(this, null);
+        e1.visit(this, null);
+        e2.visit(this, null);
+        mv.visitMethodInsn(INVOKESTATIC, PixelOps.className, "makePixel", PixelOps.makePixelSig, false);
+        return null;
+//        throw new UnsupportedOperationException("not yet implemented");
     }
 
     @Override
     public Object visitExprPixelSelector(ExprPixelSelector exprPixelSelector, Object arg) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("not yet implemented");
+        Expression e0 = exprPixelSelector.image();
+        Expression e1 = exprPixelSelector.X();
+        Expression e2 = exprPixelSelector.Y();
+
+        e0.visit(this, null);
+        e1.visit(this, null);
+        e2.visit(this, null);
+        mv.visitMethodInsn(INVOKESTATIC, PLPImage.className, "selectPixel", PLPImage.selectPixelSig, false);
+        return null;
+//        throw new UnsupportedOperationException("not yet implemented");
     }
 
-    @Override
-    public Object visitStatementLoop(StatementLoop statementLoop, Object arg) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("not yet implemented");
-    }
     @Override
     public Object visitExprEmpty(ExprEmpty exprEmpty, Object arg) throws Exception {
         // TODO Auto-generated method stub
