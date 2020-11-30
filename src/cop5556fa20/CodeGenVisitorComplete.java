@@ -375,7 +375,6 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
     public Object visitStatementImageIn(StatementImageIn statementImageIn, Object arg) throws Exception {
         String name = statementImageIn.name();
         Expression e0 = statementImageIn.source();
-        Dec dec = statementImageIn.dec();
         Type type0 = e0.type();
         String desc = "Lcop5556fa20/runtime/PLPImage;";
 
@@ -446,6 +445,22 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
                     "Ljava/awt/image/BufferedImage;"//the field type
             );
         }
+        return null;
+    }
+
+    @Override
+    public Object visitStatementOutFile(StatementOutFile statementOutFile, Object arg) throws Exception {
+        String name = statementOutFile.name();
+        Expression e0 = statementOutFile.filename();
+        String desc = "Lcop5556fa20/runtime/PLPImage;";
+
+        mv.visitFieldInsn(GETSTATIC, className, name, desc);
+        show("file out!");
+//                mv.visitVarInsn(ALOAD, dec.slot);
+        e0.visit(this, null);
+        mv.visitMethodInsn(INVOKESTATIC, LoggedIO.className, "imageToFile", LoggedIO.imageToFileSig,
+                isInterface);
+
         return null;
     }
 
@@ -853,10 +868,4 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("not yet implemented");
     }
-    @Override
-    public Object visitStatementOutFile(StatementOutFile statementOutFile, Object arg) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("not yet implemented");
-    }
-
 }

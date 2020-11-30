@@ -215,7 +215,6 @@ class CodeGen6Test {
 		keepFrames();
 	}
 
-
 	@Test
 	public void loadImage_two_dec() throws Exception {
 		String input = """
@@ -234,7 +233,6 @@ class CodeGen6Test {
 		keepFrames();
 	}
 
-
 	@Test
 	public void loadImage_EQ_url() throws Exception {
 		String input = """
@@ -250,7 +248,6 @@ class CodeGen6Test {
 		assertEquals(expectedLog, LoggedIO.globalLog);
 		keepFrames();
 	}
-
 
 	@Test
 	public void loadImage_size_url() throws Exception {
@@ -271,7 +268,6 @@ class CodeGen6Test {
 		assertEquals(expectedLog, LoggedIO.globalLog);
 	}
 
-
 	@Test
 	public void loadImage_url_two_dec_resize_LARROW_image() throws Exception {
 		String input = """
@@ -289,7 +285,6 @@ class CodeGen6Test {
 		assertEquals(expectedLog, LoggedIO.globalLog);
 		keepFrames();
 	}
-
 
 	@Test
 	public void loadImage_url_two_dec_resize_EQ_fail() throws Exception {
@@ -324,7 +319,6 @@ class CodeGen6Test {
 		keepFrames();
 	}
 
-
 	@Test
 	public void loadImage_url_Assign() throws Exception {
 		String input = """
@@ -343,7 +337,6 @@ class CodeGen6Test {
 		assertEquals(expectedLog, LoggedIO.globalLog);
 		keepFrames();
 	}
-
 
 	@Test
 	public void loadImage_url_Assign_size_pass() throws Exception {
@@ -364,7 +357,6 @@ class CodeGen6Test {
 		keepFrames();
 	}
 
-
 	@Test
 	public void loadImage_size_file() throws Exception {
 		String input = """
@@ -384,7 +376,6 @@ class CodeGen6Test {
 		keepFrames();
 	}
 
-
 	@Test
 	public void loadImage_url_Assign_size_fail_noExprImage() throws Exception {
 		String input = """
@@ -400,7 +391,6 @@ class CodeGen6Test {
 		show(exception);
 		keepFrames();
 	}
-
 
 	@Test
 	public void loadImage_url_Assign_size_fail_dimNotMatch() throws Exception {
@@ -527,7 +517,24 @@ class CodeGen6Test {
 		keepFrames();
 	}
 
-	
+	@Test
+	public void ImageToFile() throws Exception {
+		String input = """
+				image a <- @0;
+				a -> @1;
+				""";
+		String[] args = {ImageResources.urlTower, "uflTower"};
+		genRun(input,args);
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
+//		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
+		PLPImage a = new PLPImage(fetchedBufferedImage, null);
+		LoggedIO.PLPImageFile aFile = new LoggedIO.PLPImageFile(a, args[1]);
+		expectedLog.add(aFile);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+		keepFrames();
+	}
+
 	@Test
 	public void loopExampleFromDesc() throws Exception {
 		String input = """
@@ -552,7 +559,6 @@ class CodeGen6Test {
 		assertEquals(expectedLog, LoggedIO.globalLog);		
 		keepFrames();
 	}
-	
 
 	@Test void weave() throws Exception {
 		String input = """
@@ -605,9 +611,7 @@ class CodeGen6Test {
 		assertEquals(expectedLog, LoggedIO.globalLog);
 		keepFrames();
 	}
-	
 
-	
 	@Test void hashWidthfail() throws Exception {
 		String input = """
 				image a;
