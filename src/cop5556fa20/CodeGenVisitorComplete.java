@@ -347,11 +347,11 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
             mv.visitFieldInsn(GETSTATIC, className, name, desc);
             mv.visitLdcInsn(line);
             mv.visitLdcInsn(posInLine);
-            mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getHeightThrows", PLPImage.getHeightThrowsSig, false);            e.visit(this, type);
+            mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getHeightThrows", PLPImage.getHeightThrowsSig, false);
             e.visit(this, type);
             mv.visitLdcInsn(line);
             mv.visitLdcInsn(posInLine);
-            mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getHeightThrows", PLPImage.getHeightThrowsSig, false);            e.visit(this, type);
+            mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getHeightThrows", PLPImage.getHeightThrowsSig, false);
 
             mv.visitJumpInsn(IF_ICMPEQ, setTrue_height);
             mv.visitLdcInsn(line);
@@ -369,16 +369,16 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
                     "image", // the field name
                     "Ljava/awt/image/BufferedImage;"//the field type
             );
-            mv.visitFieldInsn(PUTSTATIC, className, name, desc);
+//            mv.visitFieldInsn(PUTSTATIC, className, name, desc);
 
-            mv.visitFieldInsn(GETSTATIC, className, name, desc);
-            e.visit(this, type);
-            mv.visitFieldInsn(GETFIELD, PLPImage.className, "declaredSize", "Ljava/awt/Dimension;");
-            mv.visitFieldInsn(PUTFIELD, PLPImage.className, // the class
-                    "image", // the field name
-                    "Ljava/awt/image/BufferedImage;"//the field type
-            );
-            mv.visitFieldInsn(PUTSTATIC, className, name, desc);
+//            mv.visitFieldInsn(GETSTATIC, className, name, desc);
+//            e.visit(this, type);
+//            mv.visitFieldInsn(GETFIELD, PLPImage.className, "declaredSize", "Ljava/awt/Dimension;");
+//            mv.visitFieldInsn(PUTFIELD, PLPImage.className, // the class
+//                    "declaredSize", // the field name
+//                    "Ljava/awt/Dimension;"//the field type
+//            );
+//            mv.visitFieldInsn(PUTSTATIC, className, name, desc);
         }
         return null;
 //		throw new UnsupportedOperationException("not yet implemented");
