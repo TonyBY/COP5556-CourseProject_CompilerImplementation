@@ -128,8 +128,8 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
         //evaluate initial value and store in variable, if one is given.
         Expression e = decVar.expression();
         if (e != Expression.empty) {
-            e.visit(this, type); // generates code to evaluate expression and leave value on top of the stack
-//			mv.visitLdcInsn(e.visit(this, type));
+            e.visit(this, null); // generates code to evaluate expression and leave value on top of the stack
+//			mv.visitLdcInsn(e.visit(this, null));
 
             mv.visitFieldInsn(PUTSTATIC, className, varName, desc);
         }
@@ -170,12 +170,12 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
 
         switch (op) {
             case LARROW -> {
-                e2.visit(this, type);
+                e2.visit(this, null);
                 if (type2 == Type.String) {
                     mv.visitMethodInsn(INVOKESTATIC, BufferedImageUtils.className, "fetchBufferedImage", "(Ljava/lang/String;)Ljava/awt/image/BufferedImage;", false);
                     if (e0 != Expression.empty) {
-                        e0.visit(this, type);
-                        e1.visit(this, type);
+                        e0.visit(this, null);
+                        e1.visit(this, null);
                         mv.visitMethodInsn(INVOKESTATIC, BufferedImageUtils.className, "resizeBufferedImage", "(Ljava/awt/image/BufferedImage;II)Ljava/awt/image/BufferedImage;", false);
                     }
                 }
@@ -183,8 +183,8 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
                     mv.visitFieldInsn(GETFIELD, PLPImage.className, "image", "Ljava/awt/image/BufferedImage;");
                     mv.visitMethodInsn(INVOKESTATIC, BufferedImageUtils.className, "copyBufferedImage", "(Ljava/awt/image/BufferedImage;)Ljava/awt/image/BufferedImage;", false);
                     if (e0 != Expression.empty) {
-                        e0.visit(this, type);
-                        e1.visit(this, type);
+                        e0.visit(this, null);
+                        e1.visit(this, null);
                         mv.visitMethodInsn(INVOKESTATIC, BufferedImageUtils.className, "resizeBufferedImage", "(Ljava/awt/image/BufferedImage;II)Ljava/awt/image/BufferedImage;", false);
                     }
                 }
@@ -197,11 +197,11 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
                     int line = e2.first().line();
                     int posInLine = e2.first().posInLine();
                     String message = "Cannot assign the image. Size doesn't match.";
-                    e2.visit(this, type);
+                    e2.visit(this, null);
                     mv.visitLdcInsn(line);
                     mv.visitLdcInsn(posInLine);
                     mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getWidthThrows", PLPImage.getWidthThrowsSig, false);
-                    e0.visit(this, type);
+                    e0.visit(this, null);
                     mv.visitJumpInsn(IF_ICMPEQ, setTrue_width);
                     mv.visitLdcInsn(line);
                     mv.visitLdcInsn(posInLine);
@@ -209,11 +209,11 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
                     mv.visitMethodInsn(INVOKESTATIC, PLPImage.className, "throwPLPImageException", PLPImage.throwPLPImageExceptionSig, false);
 
                     mv.visitLabel(setTrue_width);
-                    e2.visit(this, type);
+                    e2.visit(this, null);
                     mv.visitLdcInsn(line);
                     mv.visitLdcInsn(posInLine);
                     mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getHeightThrows", PLPImage.getHeightThrowsSig, false);
-                    e1.visit(this, type);
+                    e1.visit(this, null);
                     mv.visitJumpInsn(IF_ICMPEQ, setTrue_height);
                     mv.visitLdcInsn(line);
                     mv.visitLdcInsn(posInLine);
@@ -223,7 +223,7 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
                     mv.visitLabel(setTrue_height);
                     mv.visitLabel(endEB);
                 }
-                e2.visit(this, type);
+                e2.visit(this, null);
                 mv.visitFieldInsn(GETFIELD, PLPImage.className, "image", "Ljava/awt/image/BufferedImage;");
             }
             default -> mv.visitInsn(ACONST_NULL);
@@ -233,8 +233,8 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
             show("e0 != Empty");
             mv.visitTypeInsn(NEW, "java/awt/Dimension");
             mv.visitInsn(DUP);
-            e0.visit(this, type);
-            e1.visit(this, type);
+            e0.visit(this, null);
+            e1.visit(this, null);
             mv.visitMethodInsn(INVOKESPECIAL, "java/awt/Dimension", "<init>", "(II)V", false);
 
 //            mv.visitInsn(DUP); //duplicat the top value so we only work on the copy
@@ -295,7 +295,7 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
         if (type == Type.String || type== Type.Int){
             if (e != Expression.empty) {
                 mv.visitFieldInsn(GETSTATIC, className, name, desc);
-                e.visit(this, type); // generates code to evaluate expression and leave value on top of the stack
+                e.visit(this, null); // generates code to evaluate expression and leave value on top of the stack
                 mv.visitFieldInsn(PUTSTATIC, className, name, desc);
             }
         } else { // type == Type.Image
@@ -309,7 +309,7 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
             String message = "Cannot assign the image. Size doesn't match.";
             String message_noImageToAssign = "RHS Image field is null.";
 
-            e.visit(this, type);
+            e.visit(this, null);
             mv.visitFieldInsn(GETFIELD, PLPImage.className, "image", "Ljava/awt/image/BufferedImage;");
 
             mv.visitJumpInsn(IFNONNULL, setTrue_ExprImage);
@@ -329,7 +329,7 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
             mv.visitLdcInsn(line);
             mv.visitLdcInsn(posInLine);
             mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getWidthThrows", PLPImage.getWidthThrowsSig, false);
-            e.visit(this, type);
+            e.visit(this, null);
             mv.visitLdcInsn(line);
             mv.visitLdcInsn(posInLine);
             mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getWidthThrows", PLPImage.getWidthThrowsSig, false);
@@ -345,7 +345,7 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
             mv.visitLdcInsn(line);
             mv.visitLdcInsn(posInLine);
             mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getHeightThrows", PLPImage.getHeightThrowsSig, false);
-            e.visit(this, type);
+            e.visit(this, null);
             mv.visitLdcInsn(line);
             mv.visitLdcInsn(posInLine);
             mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getHeightThrows", PLPImage.getHeightThrowsSig, false);
@@ -360,7 +360,7 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
             mv.visitLabel(endSA);
 
             mv.visitFieldInsn(GETSTATIC, className, name, desc);
-            e.visit(this, type);
+            e.visit(this, null);
             mv.visitFieldInsn(GETFIELD, PLPImage.className, "image", "Ljava/awt/image/BufferedImage;");
             mv.visitFieldInsn(PUTFIELD, PLPImage.className, // the class
                     "image", // the field name
