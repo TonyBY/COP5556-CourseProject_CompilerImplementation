@@ -326,6 +326,46 @@ class CodeGen6Test {
 
 
 	@Test
+	public void loadImage_url_Assign() throws Exception {
+		String input = """
+				image a <- @0;
+				image b;
+				b = a;
+				b -> screen;
+				""";
+		String[] args = {ImageResources.urlTower};
+		genRun(input,args);
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
+//		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
+		PLPImage b = new PLPImage(fetchedBufferedImage, null);
+		expectedLog.add(b);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+		keepFrames();
+	}
+
+
+	@Test
+	public void loadImage_url_Assign_size_pass() throws Exception {
+		String input = """
+				image [400, 500] a <- @0;
+				image [400, 500] b;
+				b = a;
+				b -> screen;
+				""";
+		String[] args = {ImageResources.urlTower};
+		genRun(input,args);
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
+		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
+		PLPImage b = new PLPImage(resizedFetchedBufferedImage, new Dimension(400,500));
+		expectedLog.add(b);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+		keepFrames();
+	}
+
+
+	@Test
 	public void loadImage_size_file() throws Exception {
 		String input = """
 				image[400, 500] a <- @0;
@@ -341,6 +381,40 @@ class CodeGen6Test {
 		show("a.image: " + a.image);
 		expectedLog.add(a);
 		assertEquals(expectedLog, LoggedIO.globalLog);
+		keepFrames();
+	}
+
+
+	@Test
+	public void loadImage_url_Assign_size_fail_noExprImage() throws Exception {
+		String input = """
+				image a <- @0;
+				image [400, 500] b;
+				b = a;
+				b -> screen;
+				""";
+		Exception exception = assertThrows(PLPImageException.class, () -> {
+			String[] args = {ImageResources.urlTower};
+			genRun(input,args);
+		});
+		show(exception);
+		keepFrames();
+	}
+
+
+	@Test
+	public void loadImage_url_Assign_size_fail_dimNotMatch() throws Exception {
+		String input = """
+				image [500, 400] a;
+				image [400, 500] b;
+				b = a;
+				b -> screen;
+				""";
+		Exception exception = assertThrows(PLPImageException.class, () -> {
+			String[] args = {ImageResources.urlTower};
+			genRun(input,args);
+		});
+		show(exception);
 		keepFrames();
 	}
 

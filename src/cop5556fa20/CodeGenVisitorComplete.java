@@ -210,7 +210,6 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
                     mv.visitLdcInsn(posInLine);
                     mv.visitLdcInsn(message);
                     mv.visitMethodInsn(INVOKESTATIC, PLPImage.className, "throwPLPImageException", PLPImage.throwPLPImageExceptionSig, false);
-                    mv.visitJumpInsn(GOTO, endEB);
 
                     mv.visitLabel(setTrue_width);
                     e2.visit(this, type);
@@ -223,7 +222,6 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
                     mv.visitLdcInsn(posInLine);
                     mv.visitLdcInsn(message);
                     mv.visitMethodInsn(INVOKESTATIC, PLPImage.className, "throwPLPImageException", PLPImage.throwPLPImageExceptionSig, false);
-                    mv.visitJumpInsn(GOTO, endEB);
 
                     mv.visitLabel(setTrue_height);
                     mv.visitLabel(endEB);
@@ -233,8 +231,6 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
             }
             default -> mv.visitInsn(ACONST_NULL);
         }
-
-//        mv.visitFieldInsn(PUTFIELD, PLPImage.className, "image", "Ljava/awt/image/BufferedImage;");
 
         if (e0 != Expression.empty && e1 != Expression.empty) {
             show("e0 != Empty");
@@ -254,8 +250,6 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
         else{
             mv.visitInsn(ACONST_NULL);
         }
-//        mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getWidth", PLPImage.getWidthSig, false);
-//        mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getHeight", PLPImage.getHeightSig, false);
 
         mv.visitInsn(DUP2);
 
@@ -281,6 +275,7 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
     public Object visitStatementAssign(StatementAssign statementAssign, Object arg) throws Exception {
         // TODO Auto-generated method stub
         String name = statementAssign.name();
+        Expression e = statementAssign.expression();
         Dec dec = statementAssign.dec();
         Type type = dec.type();
         String desc;
@@ -292,18 +287,97 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
             case Int -> {
                 //IMPLEMENT THIS FOR ASSIGNMENT 5
                 desc = "I";
-
 //				throw new UnsupportedOperationException("not yet implemented");
+            }
+            case Image -> {
+                desc = "Lcop5556fa20/runtime/PLPImage;";
             }
             default -> throw new UnsupportedOperationException("not yet implemented");
         }
 
-        mv.visitFieldInsn(GETSTATIC, className, name, desc);
+        if (type == Type.String || type== Type.Int){
+            if (e != Expression.empty) {
+                mv.visitFieldInsn(GETSTATIC, className, name, desc);
+                e.visit(this, type); // generates code to evaluate expression and leave value on top of the stack
+                mv.visitFieldInsn(PUTSTATIC, className, name, desc);
+            }
+        } else { // type == Type.Image
+            Label setTrue_dim = new Label();
+            Label setTrue_ExprImage = new Label();
+            Label setTrue_width = new Label();
+            Label setTrue_height = new Label();
+            Label endSA = new Label();
+            int line = e.first().line();
+            int posInLine = e.first().posInLine();
+            String message = "Cannot assign the image. Size doesn't match.";
+            String message_noImageToAssign = "RHS Image field is null.";
 
-        //evaluate initial value and store in variable
-        Expression e = statementAssign.expression();
-        if (e != Expression.empty) {
-            e.visit(this, type); // generates code to evaluate expression and leave value on top of the stack
+            e.visit(this, type);
+            mv.visitFieldInsn(GETFIELD, PLPImage.className, "image", "Ljava/awt/image/BufferedImage;");
+
+            mv.visitJumpInsn(IFNONNULL, setTrue_ExprImage);
+            mv.visitLdcInsn(line);
+            mv.visitLdcInsn(posInLine);
+            mv.visitLdcInsn(message_noImageToAssign);
+            mv.visitMethodInsn(INVOKESTATIC, PLPImage.className, "throwPLPImageException", PLPImage.throwPLPImageExceptionSig, false);
+
+            mv.visitLabel(setTrue_ExprImage);
+            mv.visitFieldInsn(GETSTATIC, className, name, desc);
+            mv.visitFieldInsn(GETFIELD, PLPImage.className, "declaredSize", "Ljava/awt/Dimension;");
+            mv.visitJumpInsn(IFNONNULL, setTrue_dim);
+            mv.visitJumpInsn(GOTO, endSA);
+
+            mv.visitLabel(setTrue_dim);
+            mv.visitFieldInsn(GETSTATIC, className, name, desc);
+            mv.visitLdcInsn(line);
+            mv.visitLdcInsn(posInLine);
+            mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getWidthThrows", PLPImage.getWidthThrowsSig, false);
+            e.visit(this, type);
+            mv.visitLdcInsn(line);
+            mv.visitLdcInsn(posInLine);
+            mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getWidthThrows", PLPImage.getWidthThrowsSig, false);
+
+            mv.visitJumpInsn(IF_ICMPEQ, setTrue_width);
+            mv.visitLdcInsn(line);
+            mv.visitLdcInsn(posInLine);
+            mv.visitLdcInsn(message);
+            mv.visitMethodInsn(INVOKESTATIC, PLPImage.className, "throwPLPImageException", PLPImage.throwPLPImageExceptionSig, false);
+
+            mv.visitLabel(setTrue_width);
+            mv.visitFieldInsn(GETSTATIC, className, name, desc);
+            mv.visitLdcInsn(line);
+            mv.visitLdcInsn(posInLine);
+            mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getHeightThrows", PLPImage.getHeightThrowsSig, false);            e.visit(this, type);
+            e.visit(this, type);
+            mv.visitLdcInsn(line);
+            mv.visitLdcInsn(posInLine);
+            mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getHeightThrows", PLPImage.getHeightThrowsSig, false);            e.visit(this, type);
+
+            mv.visitJumpInsn(IF_ICMPEQ, setTrue_height);
+            mv.visitLdcInsn(line);
+            mv.visitLdcInsn(posInLine);
+            mv.visitLdcInsn(message);
+            mv.visitMethodInsn(INVOKESTATIC, PLPImage.className, "throwPLPImageException", PLPImage.throwPLPImageExceptionSig, false);
+
+            mv.visitLabel(setTrue_height);
+            mv.visitLabel(endSA);
+
+            mv.visitFieldInsn(GETSTATIC, className, name, desc);
+            e.visit(this, type);
+            mv.visitFieldInsn(GETFIELD, PLPImage.className, "image", "Ljava/awt/image/BufferedImage;");
+            mv.visitFieldInsn(PUTFIELD, PLPImage.className, // the class
+                    "image", // the field name
+                    "Ljava/awt/image/BufferedImage;"//the field type
+            );
+            mv.visitFieldInsn(PUTSTATIC, className, name, desc);
+
+            mv.visitFieldInsn(GETSTATIC, className, name, desc);
+            e.visit(this, type);
+            mv.visitFieldInsn(GETFIELD, PLPImage.className, "declaredSize", "Ljava/awt/Dimension;");
+            mv.visitFieldInsn(PUTFIELD, PLPImage.className, // the class
+                    "image", // the field name
+                    "Ljava/awt/image/BufferedImage;"//the field type
+            );
             mv.visitFieldInsn(PUTSTATIC, className, name, desc);
         }
         return null;
