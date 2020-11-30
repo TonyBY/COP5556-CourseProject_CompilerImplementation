@@ -855,8 +855,62 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
 
     @Override
     public Object visitExprHash(ExprHash exprHash, Object arg) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("not yet implemented");
+        String attr = exprHash.attr();
+        Expression e0 = exprHash.e();
+        Type type0 = e0.type();
+        int line = e0.first().line();
+        int posInLine = e0.first().posInLine();
+        String message = "Image has not been initialized.";
+        Label setTrue_dim = new Label();
+        Label setTrue_ExprImage = new Label();
+        Label endCheck = new Label();
+
+        if (type0 == Type.Image){
+            // Check if the image has been initialized or not.
+            e0.visit(this, null);
+            mv.visitFieldInsn(GETFIELD, PLPImage.className, "image", "Ljava/awt/image/BufferedImage;");
+            mv.visitJumpInsn(IFNONNULL, endCheck);
+
+            e0.visit(this, null);
+            mv.visitFieldInsn(GETFIELD, PLPImage.className, "declaredSize", "Ljava/awt/Dimension;");
+            mv.visitJumpInsn(IFNONNULL, endCheck);
+            mv.visitLdcInsn(line);
+            mv.visitLdcInsn(posInLine);
+            mv.visitLdcInsn(message);
+            mv.visitMethodInsn(INVOKESTATIC, PLPImage.className, "throwPLPImageException", PLPImage.throwPLPImageExceptionSig, false);
+        }
+
+        mv.visitLabel(endCheck);
+        switch (attr){
+            case "width" -> {
+                e0.visit(this, null);
+                mv.visitLdcInsn(line);
+                mv.visitLdcInsn(posInLine);
+                mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getWidthThrows", PLPImage.getWidthThrowsSig, false);
+            }
+            case "height" -> {
+                e0.visit(this, null);
+                mv.visitLdcInsn(line);
+                mv.visitLdcInsn(posInLine);
+                mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getHeightThrows", PLPImage.getHeightThrowsSig, false);
+            }
+            case "red" -> {
+                e0.visit(this, null);
+                mv.visitMethodInsn(INVOKESTATIC, PixelOps.className, "getRed", PixelOps.getRedSig, false);
+            }
+            case "green" -> {
+                e0.visit(this, null);
+                mv.visitMethodInsn(INVOKESTATIC, PixelOps.className, "getGreen", PixelOps.getGreenSig, false);
+            }
+            case "blue" -> {
+                e0.visit(this, null);
+                mv.visitMethodInsn(INVOKESTATIC, PixelOps.className, "getBlue", PixelOps.getBlueSig, false);
+            }
+            default -> {throw new UnsupportedOperationException("not yet implemented");}
+        }
+
+        return null;
+//        throw new UnsupportedOperationException("not yet implemented");
     }
 
     @Override

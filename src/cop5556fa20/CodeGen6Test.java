@@ -542,18 +542,11 @@ class CodeGen6Test {
 		String input = """
 				image [400, 500] a <- @0;
 				int b = a#width;
-				int c = a#height
+				int c = a#height;
 				""";
 		String[] args = {ImageResources.urlTower};
 		genRun(input,args);
 		ArrayList<Object> expectedLog = new ArrayList<Object>();
-//		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
-//		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
-//		PLPImage a = new PLPImage(resizedFetchedBufferedImage, new Dimension(400,500));
-//		int b = a.getWidth();
-//		int c = a.getHeight();
-//		expectedLog.add(b);
-//		expectedLog.add(c);
 		expectedLog.add(400);
 		expectedLog.add(500);
 		assertEquals(expectedLog, PLPImage.globalLog);
@@ -563,18 +556,11 @@ class CodeGen6Test {
 		String input = """
 				image [400, 500] a;
 				int b = a#width;
-				int c = a#height
+				int c = a#height;
 				""";
 		String[] args = {ImageResources.urlTower};
 		genRun(input,args);
 		ArrayList<Object> expectedLog = new ArrayList<Object>();
-//		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
-//		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
-//		PLPImage a = new PLPImage(resizedFetchedBufferedImage, new Dimension(400,500));
-//		int b = a.getWidth();
-//		int c = a.getHeight();
-//		expectedLog.add(b);
-//		expectedLog.add(c);
 		expectedLog.add(400);
 		expectedLog.add(500);
 		assertEquals(expectedLog, PLPImage.globalLog);
@@ -584,44 +570,37 @@ class CodeGen6Test {
 		String input = """
 				image a <- @0;
 				int b = a#width;
-				int c = a#height
+				int c = a#height;
 				""";
 		String[] args = {ImageResources.urlTower};
 		genRun(input,args);
 		ArrayList<Object> expectedLog = new ArrayList<Object>();
-//		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
+		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
 //		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
-//		PLPImage a = new PLPImage(resizedFetchedBufferedImage, new Dimension(400,500));
+		PLPImage a = new PLPImage(fetchedBufferedImage, null);
 //		int b = a.getWidth();
 //		int c = a.getHeight();
 //		expectedLog.add(b);
 //		expectedLog.add(c);
-		expectedLog.add(400);
-		expectedLog.add(500);
+		expectedLog.add(a.getWidth());
+		expectedLog.add(a.getHeight());
 		assertEquals(expectedLog, PLPImage.globalLog);
 	}
 
 	@Test void hashRGB_Constructed() throws Exception {
 		String input = """
-				int pixel = <<1, 2, 3>>
-				int r = pixel#Red;
-				int g = pixel#Green;
-				int b = pixel#Blue;
+				int pixel = <<@0, @1, @2>>;
+				int r = pixel#red;
+				int g = pixel#green;
+				int b = pixel#blue;
 				""";
-		String[] args = {ImageResources.urlTower};
+		String[] args = {"1", "2", "3"};
 		genRun(input,args);
 		ArrayList<Object> expectedLog = new ArrayList<Object>();
-//		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
-//		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
-//		PLPImage a = new PLPImage(resizedFetchedBufferedImage, new Dimension(400,500));
-//		int pixel = a.selectPixel(100, 100);
-//		int r = PixelOps.getRed(pixel);
-//		int g = PixelOps.getGreen(pixel);
-//		int b = PixelOps.getBlue(pixel);
 		expectedLog.add(1);
 		expectedLog.add(2);
 		expectedLog.add(3);
-		assertEquals(expectedLog, PLPImage.globalLog);
+		assertEquals(expectedLog, PixelOps.globalLog);
 	}
 
 	@Test void hashWidthfail() throws Exception {
