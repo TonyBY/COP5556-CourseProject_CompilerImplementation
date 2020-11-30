@@ -46,7 +46,6 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
         this.className = className;
     }
 
-
     @Override
     public Object visitProgram(Program program, Object arg) throws Exception {
         cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
@@ -110,7 +109,6 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
 
     }
 
-
     /**
      * Add a static field to the class for this variable.
      */
@@ -137,7 +135,6 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
         }
         return null;
     }
-
 
     @Override
     public Object visitDecImage(DecImage decImage, Object arg) throws Exception {
@@ -369,19 +366,87 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
                     "image", // the field name
                     "Ljava/awt/image/BufferedImage;"//the field type
             );
-//            mv.visitFieldInsn(PUTSTATIC, className, name, desc);
-
-//            mv.visitFieldInsn(GETSTATIC, className, name, desc);
-//            e.visit(this, type);
-//            mv.visitFieldInsn(GETFIELD, PLPImage.className, "declaredSize", "Ljava/awt/Dimension;");
-//            mv.visitFieldInsn(PUTFIELD, PLPImage.className, // the class
-//                    "declaredSize", // the field name
-//                    "Ljava/awt/Dimension;"//the field type
-//            );
-//            mv.visitFieldInsn(PUTSTATIC, className, name, desc);
         }
         return null;
 //		throw new UnsupportedOperationException("not yet implemented");
+    }
+
+    @Override
+    public Object visitStatementImageIn(StatementImageIn statementImageIn, Object arg) throws Exception {
+        String name = statementImageIn.name();
+        Expression e0 = statementImageIn.source();
+        Dec dec = statementImageIn.dec();
+        Type type0 = e0.type();
+        String desc = "Lcop5556fa20/runtime/PLPImage;";
+
+        Label setTrue_dim = new Label();
+        Label setTrue_width = new Label();
+        Label setTrue_height = new Label();
+        Label endResize = new Label();
+        int line = e0.first().line();
+        int posInLine = e0.first().posInLine();
+        String message = "Cannot assign the image. Size doesn't match.";
+        String message_noImageToAssign = "RHS Image field is null.";
+        if (type0 == Type.String) {
+            mv.visitFieldInsn(GETSTATIC, className, name, desc);
+            e0.visit(this, null);
+            mv.visitMethodInsn(INVOKESTATIC, BufferedImageUtils.className, "fetchBufferedImage", "(Ljava/lang/String;)Ljava/awt/image/BufferedImage;", false);
+
+            mv.visitFieldInsn(GETSTATIC, className, name, desc);
+            mv.visitFieldInsn(GETFIELD, PLPImage.className, "declaredSize", "Ljava/awt/Dimension;");
+            mv.visitJumpInsn(IFNONNULL, setTrue_dim);
+            mv.visitJumpInsn(GOTO, endResize);
+
+            mv.visitLabel(setTrue_dim);
+//            e0.visit(this, null);
+//            mv.visitMethodInsn(INVOKESTATIC, BufferedImageUtils.className, "fetchBufferedImage", "(Ljava/lang/String;)Ljava/awt/image/BufferedImage;", false);
+            mv.visitFieldInsn(GETSTATIC, className, name, desc);
+            mv.visitLdcInsn(line);
+            mv.visitLdcInsn(posInLine);
+            mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getWidthThrows", PLPImage.getWidthThrowsSig, false);
+            mv.visitFieldInsn(GETSTATIC, className, name, desc);
+            mv.visitLdcInsn(line);
+            mv.visitLdcInsn(posInLine);
+            mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getHeightThrows", PLPImage.getHeightThrowsSig, false);
+            mv.visitMethodInsn(INVOKESTATIC, BufferedImageUtils.className, "resizeBufferedImage", "(Ljava/awt/image/BufferedImage;II)Ljava/awt/image/BufferedImage;", false);
+
+            mv.visitLabel(endResize);
+            mv.visitFieldInsn(PUTFIELD, PLPImage.className, // the class
+                    "image", // the field name
+                    "Ljava/awt/image/BufferedImage;"//the field type
+            );
+        } else if (type0 == Type.Image) {
+            mv.visitFieldInsn(GETSTATIC, className, name, desc);
+            e0.visit(this, null);
+            mv.visitFieldInsn(GETFIELD, PLPImage.className, "image", "Ljava/awt/image/BufferedImage;");
+            mv.visitMethodInsn(INVOKESTATIC, BufferedImageUtils.className, "copyBufferedImage", "(Ljava/awt/image/BufferedImage;)Ljava/awt/image/BufferedImage;", false);
+
+            mv.visitFieldInsn(GETSTATIC, className, name, desc);
+            mv.visitFieldInsn(GETFIELD, PLPImage.className, "declaredSize", "Ljava/awt/Dimension;");
+            mv.visitJumpInsn(IFNONNULL, setTrue_dim);
+            mv.visitJumpInsn(GOTO, endResize);
+
+            mv.visitLabel(setTrue_dim);
+//            e0.visit(this, null);
+//            mv.visitFieldInsn(GETFIELD, PLPImage.className, "image", "Ljava/awt/image/BufferedImage;");
+//            mv.visitMethodInsn(INVOKESTATIC, BufferedImageUtils.className, "copyBufferedImage", "(Ljava/awt/image/BufferedImage;)Ljava/awt/image/BufferedImage;", false);
+            mv.visitFieldInsn(GETSTATIC, className, name, desc);
+            mv.visitLdcInsn(line);
+            mv.visitLdcInsn(posInLine);
+            mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getWidthThrows", PLPImage.getWidthThrowsSig, false);
+            mv.visitFieldInsn(GETSTATIC, className, name, desc);
+            mv.visitLdcInsn(line);
+            mv.visitLdcInsn(posInLine);
+            mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getHeightThrows", PLPImage.getHeightThrowsSig, false);
+            mv.visitMethodInsn(INVOKESTATIC, BufferedImageUtils.className, "resizeBufferedImage", "(Ljava/awt/image/BufferedImage;II)Ljava/awt/image/BufferedImage;", false);
+
+            mv.visitLabel(endResize);
+            mv.visitFieldInsn(PUTFIELD, PLPImage.className, // the class
+                    "image", // the field name
+                    "Ljava/awt/image/BufferedImage;"//the field type
+            );
+        }
+        return null;
     }
 
     @Override
@@ -778,11 +843,6 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
-    @Override
-    public Object visitStatementImageIn(StatementImageIn statementImageIn, Object arg) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("not yet implemented");
-    }
     @Override
     public Object visitStatementLoop(StatementLoop statementLoop, Object arg) throws Exception {
         // TODO Auto-generated method stub

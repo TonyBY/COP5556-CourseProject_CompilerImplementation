@@ -418,6 +418,115 @@ class CodeGen6Test {
 		keepFrames();
 	}
 
+	@Test
+	public void loadImage_url_ImageIn_url() throws Exception {
+		String input = """
+				image a;
+				a <- @0;
+				a -> screen;
+				""";
+		String[] args = {ImageResources.urlTower};
+		genRun(input,args);
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
+//		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
+		PLPImage a = new PLPImage(fetchedBufferedImage, null);
+		expectedLog.add(a);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+		keepFrames();
+	}
+
+	@Test
+	public void loadImage_url_ImageIn_file() throws Exception {
+		String input = """
+				image a;
+				a <- @0;
+				a -> screen;
+				""";
+		String[] args = {ImageResources.urlTower};
+		genRun(input,args);
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
+//		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
+		PLPImage a = new PLPImage(fetchedBufferedImage, null);
+		expectedLog.add(a);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+		keepFrames();
+	}
+
+	@Test
+	public void loadImage_url_ImageIn_image() throws Exception {
+		String input = """
+				image a;
+				a <- @0;
+				a -> screen;
+				""";
+		String[] args = {ImageResources.urlTower};
+		genRun(input,args);
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
+//		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
+		PLPImage a = new PLPImage(fetchedBufferedImage, null);
+		expectedLog.add(a);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+		keepFrames();
+	}
+
+	@Test
+	public void loadImage_url_ImageIn_url_resize() throws Exception {
+		String input = """
+				image [400, 500] a;
+				a <- @0;
+				a -> screen;
+				""";
+		String[] args = {ImageResources.urlTower};
+		genRun(input,args);
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
+		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
+		PLPImage a = new PLPImage(resizedFetchedBufferedImage, new Dimension(400,500));
+		expectedLog.add(a);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+		keepFrames();
+	}
+
+	@Test
+	public void loadImage_url_ImageIn_file_resize() throws Exception {
+		String input = """
+				image [400, 500] a;
+				a <- @0;
+				a -> screen;
+				""";
+		String[] args = {ImageResources.fileImage0};
+		genRun(input,args);
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
+		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
+		PLPImage a = new PLPImage(resizedFetchedBufferedImage, new Dimension(400,500));
+		expectedLog.add(a);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+		keepFrames();
+	}
+
+	@Test
+	public void loadImage_url_ImageIn_image_resize() throws Exception {
+		String input = """
+				image [400, 500] a;
+				image b <- @0;
+				a <- b;
+				a -> screen;
+				""";
+		String[] args = {ImageResources.urlTower};
+		genRun(input,args);
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
+		BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
+		PLPImage a = new PLPImage(resizedFetchedBufferedImage, new Dimension(400,500));
+		expectedLog.add(a);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+		keepFrames();
+	}
+
 	
 	@Test
 	public void loopExampleFromDesc() throws Exception {
