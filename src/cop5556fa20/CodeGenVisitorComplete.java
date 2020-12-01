@@ -249,17 +249,17 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
             mv.visitInsn(ACONST_NULL);
         }
 
-        mv.visitInsn(DUP2);
-
-        //print the top values and remove from the stack
-        mv.visitFieldInsn(GETSTATIC,"java/lang/System", "out", "Ljava/io/PrintStream;");//put System.out to operand stack
-        mv.visitInsn(SWAP);
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/Object;)V");
-
-        //print the second value and remove from the stack
-        mv.visitFieldInsn(GETSTATIC,"java/lang/System", "out", "Ljava/io/PrintStream;");//put System.out to operand stack
-        mv.visitInsn(SWAP);
-        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/Object;)V");
+//        mv.visitInsn(DUP2);
+//
+//        //print the top values and remove from the stack
+//        mv.visitFieldInsn(GETSTATIC,"java/lang/System", "out", "Ljava/io/PrintStream;");//put System.out to operand stack
+//        mv.visitInsn(SWAP);
+//        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/Object;)V");
+//
+//        //print the second value and remove from the stack
+//        mv.visitFieldInsn(GETSTATIC,"java/lang/System", "out", "Ljava/io/PrintStream;");//put System.out to operand stack
+//        mv.visitInsn(SWAP);
+//        mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/Object;)V");
 
         mv.visitMethodInsn(INVOKESPECIAL, PLPImage.className, "<init>", "(Ljava/awt/image/BufferedImage;Ljava/awt/Dimension;)V", false);
         //        mv.visitVarInsn(ASTORE, decImage.slot);
@@ -451,14 +451,132 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
 
     @Override
     public Object visitStatementLoop(StatementLoop statementLoop, Object arg) throws Exception {
-//        String name = statementLoop.name();
-//        Expression e0 = statementLoop.cond();
-//        Expression e1 = statementLoop.e();
-//        String desc = "Lcop5556fa20/runtime/PLPImage;";
-//
-//
-//        return null;
-        throw new UnsupportedOperationException("not yet implemented");
+        String name = statementLoop.name();
+        Expression e0 = statementLoop.cond();
+        Expression e1 = statementLoop.e();
+        String desc = "Lcop5556fa20/runtime/PLPImage;";
+
+        int nameLine = statementLoop.first().line();
+        int namePosInLine = statementLoop.first().posInLine();
+        String nameMessage = "Image has not been initialized.";
+        Label endCheck = new Label();
+
+        Label startCond = new Label();
+        Label createImage = new Label();
+        Label updatePixel = new Label();
+        Label nextPixel = new Label();
+        Label newColumn = new Label();
+        Label endLoop = new Label();
+
+        // Check if the image has been initialized or not.
+        mv.visitFieldInsn(GETSTATIC, className, name, desc);
+        mv.visitFieldInsn(GETFIELD, PLPImage.className, "image", "Ljava/awt/image/BufferedImage;");
+        mv.visitJumpInsn(IFNONNULL, endCheck);
+
+        mv.visitFieldInsn(GETSTATIC, className, name, desc);
+        mv.visitFieldInsn(GETFIELD, PLPImage.className, "declaredSize", "Ljava/awt/Dimension;");
+        mv.visitJumpInsn(IFNONNULL, createImage);
+        mv.visitLdcInsn(nameLine);
+        mv.visitLdcInsn(namePosInLine);
+        mv.visitLdcInsn(nameMessage);
+        mv.visitMethodInsn(INVOKESTATIC, PLPImage.className, "throwPLPImageException", PLPImage.throwPLPImageExceptionSig, false);
+
+        // Label: createImage
+        mv.visitLabel(createImage);
+        mv.visitFieldInsn(GETSTATIC, className, name, desc);
+
+        //Get Width.
+        mv.visitFieldInsn(GETSTATIC, className, name, desc);
+        mv.visitLdcInsn(nameLine);
+        mv.visitLdcInsn(namePosInLine);
+        mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getWidthThrows", PLPImage.getWidthThrowsSig, false);
+        // Get height.
+        mv.visitFieldInsn(GETSTATIC, className, name, desc);
+        mv.visitLdcInsn(nameLine);
+        mv.visitLdcInsn(namePosInLine);
+        mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getHeightThrows", PLPImage.getHeightThrowsSig, false);
+
+        mv.visitMethodInsn(INVOKESTATIC, BufferedImageUtils.className, "createBufferedImage", "(II)Ljava/awt/image/BufferedImage;", false);
+        mv.visitFieldInsn(PUTFIELD, PLPImage.className, // the class
+                "image", // the field name
+                "Ljava/awt/image/BufferedImage;"//the field type
+        );
+
+        mv.visitLabel(endCheck);
+
+        //Init X, Y
+        FieldVisitor fieldVisitorX = cw.visitField(ACC_STATIC, "X", "I", null, null);
+        fieldVisitorX.visitEnd();
+        FieldVisitor fieldVisitorY = cw.visitField(ACC_STATIC, "Y", "I", null, null);
+        fieldVisitorY.visitEnd();
+        mv.visitLdcInsn(0);
+        mv.visitFieldInsn(PUTSTATIC, className, "X", "I");
+        mv.visitLdcInsn(0);
+        mv.visitFieldInsn(PUTSTATIC, className, "Y", "I");
+
+        //Label: startCond. Eval Condition: e0
+        mv.visitLabel(startCond);
+        if (e0 != Expression.empty) {
+            e0.visit(this, null);
+            mv.visitLdcInsn(true);
+            mv.visitJumpInsn(IF_ICMPEQ, updatePixel);
+            mv.visitJumpInsn(GOTO, nextPixel);
+        }
+
+        // Label: updatePixel
+        mv.visitLabel(updatePixel);
+        mv.visitFieldInsn(GETSTATIC, className, name, desc);
+        mv.visitFieldInsn(GETSTATIC, className, "X", "I");
+        mv.visitFieldInsn(GETSTATIC, className, "Y", "I");
+        e1.visit(this, null);
+        mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "updatePixel", PLPImage.updatePixelSig, false);
+        mv.visitJumpInsn(GOTO, nextPixel);
+
+        // Label: nextPixel. move cursor
+        mv.visitLabel(nextPixel);
+        // Check if finish scanning a column of the image.
+        mv.visitFieldInsn(GETSTATIC, className, "Y", "I");
+        mv.visitLdcInsn(1);
+        mv.visitInsn(IADD);
+        // Get height.
+        mv.visitFieldInsn(GETSTATIC, className, name, desc);
+        mv.visitLdcInsn(nameLine);
+        mv.visitLdcInsn(namePosInLine);
+        mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getHeightThrows", PLPImage.getHeightThrowsSig, false);
+
+        mv.visitJumpInsn(IF_ICMPEQ, newColumn);
+        mv.visitFieldInsn(GETSTATIC, className, "Y", "I");
+        mv.visitLdcInsn(1);
+        mv.visitInsn(IADD);
+        mv.visitFieldInsn(PUTSTATIC, className, "Y", "I");
+        mv.visitJumpInsn(GOTO, startCond);
+
+        //Label: newColumn
+        mv.visitLabel(newColumn);
+        mv.visitLdcInsn(0);
+        mv.visitFieldInsn(PUTSTATIC, className, "Y", "I");
+
+        //Check if finish scanning the whole image.
+        mv.visitFieldInsn(GETSTATIC, className, "X", "I");
+        mv.visitLdcInsn(1);
+        mv.visitInsn(IADD);
+        //Get Width.
+        mv.visitFieldInsn(GETSTATIC, className, name, desc);
+        mv.visitLdcInsn(nameLine);
+        mv.visitLdcInsn(namePosInLine);
+        mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "getWidthThrows", PLPImage.getWidthThrowsSig, false);
+
+        mv.visitJumpInsn(IF_ICMPEQ, endLoop);
+        mv.visitFieldInsn(GETSTATIC, className, "X", "I");
+        mv.visitLdcInsn(1);
+        mv.visitInsn(IADD);
+        mv.visitFieldInsn(PUTSTATIC, className, "X", "I");
+        mv.visitJumpInsn(GOTO, startCond);
+
+        mv.visitLabel(endLoop);
+
+        return null;
+//        throw new UnsupportedOperationException("not yet implemented");
     }
 
     @Override
@@ -805,7 +923,14 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
         // TODO Auto-generated method stub
         String name = exprVar.name();
         Type type = exprVar.type();
-        Dec dec = exprVar.dec();
+
+        if (name == "X") {
+            mv.visitFieldInsn(GETSTATIC, className, "X", "I");
+            return null;
+        } else if (name == "Y") {
+            mv.visitFieldInsn(GETSTATIC, className, "Y", "I");
+            return null;
+        }
 
         String desc;
         switch (type) {
@@ -861,8 +986,6 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
         int line = e0.first().line();
         int posInLine = e0.first().posInLine();
         String message = "Image has not been initialized.";
-        Label setTrue_dim = new Label();
-        Label setTrue_ExprImage = new Label();
         Label endCheck = new Label();
 
         if (type0 == Type.Image){
