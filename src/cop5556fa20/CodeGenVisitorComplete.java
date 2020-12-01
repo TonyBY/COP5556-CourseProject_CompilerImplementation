@@ -243,7 +243,7 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
             e0.visit(this, null);
             e1.visit(this, null);
             mv.visitMethodInsn(INVOKESPECIAL, "java/awt/Dimension", "<init>", "(II)V", false);
-
+//            print the top 1 element in the stack
 //            mv.visitInsn(DUP); //duplicat the top value so we only work on the copy
 //            mv.visitFieldInsn(GETSTATIC,"java/lang/System", "out", "Ljava/io/PrintStream;");//put System.out to operand stack
 //            mv.visitInsn(SWAP); // swap of the top two values of the opestack: value1 value2 => value2 value1
@@ -255,6 +255,7 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
             mv.visitInsn(ACONST_NULL);
         }
 
+//        print the top 2 element in the stack
 //        mv.visitInsn(DUP2);
 //
 //        //print the top values and remove from the stack
