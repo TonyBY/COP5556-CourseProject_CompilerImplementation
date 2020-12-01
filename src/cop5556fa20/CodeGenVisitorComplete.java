@@ -155,10 +155,7 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
         Type type0 = e0.type();
         Type type1 = e1.type();
         Type type2 = e2.type();
-        String desc;
-
-        if (type == Type.Image) {desc = "Lcop5556fa20/runtime/PLPImage;";}
-        else {throw new UnsupportedOperationException("visitDecImage can only be type of Image. Received: " + type);}
+        String desc = "Lcop5556fa20/runtime/PLPImage;";
 
         FieldVisitor fieldVisitor = cw.visitField(ACC_STATIC, imgName, desc, null, null);
         fieldVisitor.visitEnd();
