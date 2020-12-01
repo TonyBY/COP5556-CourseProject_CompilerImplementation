@@ -418,7 +418,7 @@ class CodeGen6Test {
 				a <- @0;
 				a -> screen;
 				""";
-		String[] args = {ImageResources.urlTower};
+		String[] args = {ImageResources.urlKanapaha};
 		genRun(input,args);
 		ArrayList<Object> expectedLog = new ArrayList<Object>();
 		BufferedImage fetchedBufferedImage = BufferedImageUtils.fetchBufferedImage(args[0]);
@@ -690,5 +690,626 @@ class CodeGen6Test {
 		expectedLog.add(checkerboard);
 		assertEquals(expectedLog, LoggedIO.globalLog);
 		keepFrames();
+	}
+
+	/*****************************  test cases from hw5 ******************************************/
+	@Test
+	public void helloWorld() throws Exception {
+		String className = "HelloWorld";
+		String input = """
+				string s = "Hello, World!";
+				s -> screen;
+				""";
+		byte[] bytecode = genCode(input, className, false);
+		String[] args = {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add("Hello, World!");
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void decVar_int() throws Exception {
+		String className = "decVar_int";
+		String input = """
+				int s = 1024;
+				s -> screen;
+				""";
+		byte[] bytecode = genCode(input, className, false);
+		String[] args = {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(1024);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void decVar_var() throws Exception {
+		String className = "decVar_int";
+		String input = """
+				int a = 1024;
+				int s = a;
+				s -> screen;
+				""";
+		byte[] bytecode = genCode(input, className, false);
+		String[] args = {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(1024);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void commandLineArg_string0() throws Exception {
+		String className = "commandLineArg_string0";
+		String input = """
+				string s;
+				s = @0;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {"Hello from the command line!"};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(args[0]);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void commandLineArg_string1() throws Exception {
+		String className = "commandLineArg_string1";
+		String input = """
+				string s;
+				s = @0 + @1;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {"Hello!", " World!"};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(args[0] + args[1]);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void commandLineArg_int0() throws Exception {
+		String className = "commandLineArg_int0";
+		String input = """
+				int s;
+				s = @0;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {"1024"};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(1024);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void commandLineArg_int1() throws Exception {
+		String className = "commandLineArg_int1";
+		String input = """
+				int s;
+				s = @0 + @1;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {"100", "200"};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(300);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_stringLit() throws Exception {
+		String className = "statementAssign_stringLit";
+		String input = """
+				string s;
+				s = "Hello!";
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add("Hello!");
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_intLit() throws Exception {
+		String className = "statementAssign_intLit";
+		String input = """
+				int s;
+				s = 1024;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(1024);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_var() throws Exception {
+		String className = "statementAssign_var";
+		String input = """
+				int s;
+				int a = 1024;
+				s = a;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(1024);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_const() throws Exception {
+		String className = "statementAssign_const";
+		String input = """
+				int s;
+				s = WHITE;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(0xffffffff);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_unary_PLUS() throws Exception {
+		String className = "statementAssign_unary_PLUS";
+		String input = """
+				int s;
+				int a = 1024;
+				s = +a;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(1024);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_unary_MINUS() throws Exception {
+		String className = "statementAssign_unary_MINUS";
+		String input = """
+				int s;
+				int a = 1024;
+				s = -a;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(-1024);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_unary_EXCL() throws Exception {
+		String className = "statementAssign_unary_EXCL";
+		String input = """
+				int s;
+				s = !(3 == 4) ? 1 : 0;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(1);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_binary_ADD_int() throws Exception {
+		String className = "statementAssign_binary_ADD_int";
+		String input = """
+				int s;
+				int a = 1024;
+				int b = 2048;
+				int c = 512;
+				s = a + b + c;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(3584);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_binary_ADD_string() throws Exception {
+		String className = "statementAssign_binary_ADD_string";
+		String input = """
+				string s;
+				string a = "Hello ";
+				string b = "World!";
+				s = a + b;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add("Hello World!");
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_binary_MINUS() throws Exception {
+		String className = "statementAssign_binary_MINUS";
+		String input = """
+				int s;
+				int a = 1024;
+				int b = 2048;
+				s = a - b;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(-1024);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_binary_Star() throws Exception {
+		String className = "statementAssign_binary_Star";
+		String input = """
+				int s;
+				int a = 1024;
+				int b = 2;
+				int c = 10;
+				s = c + a * b;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(2058);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_binary_DIV() throws Exception {
+		String className = "statementAssign_binary_DIV";
+		String input = """
+				int s;
+				int a = 2048;
+				int b = 2;
+				s = a / b;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(1024);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_binary_MOD() throws Exception {
+		String className = "statementAssign_binary_MOD";
+		String input = """
+				int s;
+				int a = 3;
+				int b = 2;
+				s = a % b;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(1);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_conditional_EQ_int() throws Exception {
+		String className = "statementAssign_conditional_EQ_int";
+		String input = """
+				int s;
+				int a = 3;
+				int b = 3;
+				s = (a == b) ? 1 : 0;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(1);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_conditional_EQ_string() throws Exception {
+		String className = "statementAssign_conditional_EQ_string";
+		String input = """
+				int s;
+				string a = "hello";
+				string b = "hello";
+				s = (a == b) ? 1 : 0;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(1);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_conditional_EQ_boolean() throws Exception {
+		String className = "statementAssign_conditional_EQ_boolean";
+		String input = """
+				int s;
+				string a = "hello";
+				int b = 1024;
+				string c = "hello";
+				int d = 1024;
+				s = ((a==c) == (b==d)) ? 1 : 0;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(1);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_conditional_NEQ_int() throws Exception {
+		String className = "statementAssign_conditional_NEQ_int";
+		String input = """
+				int s;
+				int a = 3;
+				int b = 3;
+				s = (a != b) ? 1 : 0;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(0);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_conditional_NEQ_string() throws Exception {
+		String className = "statementAssign_conditional_NEQ_string";
+		String input = """
+				int s;
+				string a = "hello";
+				string b = "hello";
+				s = (a != b) ? 1 : 0;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(0);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_conditional_NEQ_boolean() throws Exception {
+		String className = "statementAssign_conditional_NEQ_boolean";
+		String input = """
+				int s;
+				string a = "hello";
+				int b = 1024;
+				string c = "hello";
+				int d = 1024;
+				s = ((a==c) != (b==d)) ? 1 : 0;
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add(0);
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_conditional_LT_int() throws Exception {
+		String className = "statementAssign_conditional_LT_int";
+		String input = """
+				string s;
+				int a = 3;
+				int b = 34;
+				s = (a < b) ? "a > b" : "a <= b";
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add("a > b");
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_conditional_GT_int() throws Exception {
+		String className = "statementAssign_conditional_GT_int";
+		String input = """
+				string s;
+				int a = 3;
+				int b = 34;
+				s = (a > b) ? "a > b" : "a <= b";
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add("a <= b");
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_conditional_LE_int() throws Exception {
+		String className = "statementAssign_conditional_LE_int";
+		String input = """
+				string s;
+				int a = 34;
+				int b = 34;
+				s = (a <= b) ? "a <= b" : "a > b";
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add("a <= b");
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_conditional_GE_int() throws Exception {
+		String className = "statementAssign_conditional_GE_int";
+		String input = """
+				string s;
+				int a = 34;
+				int b = 34;
+				s = (a >= b) ? "a >= b" : "a < b";
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add("a >= b");
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_conditional_AND() throws Exception {
+		String className = "statementAssign_conditional_AND";
+		String input = """
+				string s;
+				int a = 34;
+				int b = 34;
+				string c = "hello";
+				string d = "world";
+				s = (a >= b) & c != d ? "True" : "False";
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add("True");
+		assertEquals(expectedLog, LoggedIO.globalLog);
+	}
+
+	@Test
+	public void statementAssign_conditional_OR() throws Exception {
+		String className = "statementAssign_conditional_OR";
+		String input = """
+				string s;
+				int a = 34;
+				int b = 34;
+				string c = "hello";
+				string d = "world";
+				s = (a >= b) | c == d ? "True" : "False";
+				s -> screen;
+				""";
+
+		byte[] bytecode = genCode(input, className, false);
+		String[] args =  {};
+		runCode(className, bytecode, args);
+		//set up expected log
+		ArrayList<Object> expectedLog = new ArrayList<Object>();
+		expectedLog.add("True");
+		assertEquals(expectedLog, LoggedIO.globalLog);
 	}
 }

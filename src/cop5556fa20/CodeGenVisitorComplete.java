@@ -68,6 +68,12 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
         mv.visitCode();
         // insert label before first instruction
         Label mainStart = new Label();
+
+        FieldVisitor fieldVisitorX = cw.visitField(ACC_STATIC, "X", "I", null, null);
+        fieldVisitorX.visitEnd();
+        FieldVisitor fieldVisitorY = cw.visitField(ACC_STATIC, "Y", "I", null, null);
+        fieldVisitorY.visitEnd();
+
         mv.visitLabel(mainStart);
         // visit children to add instructions to method
         List<ASTNode> nodes = program.decOrStatement();
@@ -505,10 +511,6 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
         mv.visitLabel(endCheck);
 
         //Init X, Y
-        FieldVisitor fieldVisitorX = cw.visitField(ACC_STATIC, "X", "I", null, null);
-        fieldVisitorX.visitEnd();
-        FieldVisitor fieldVisitorY = cw.visitField(ACC_STATIC, "Y", "I", null, null);
-        fieldVisitorY.visitEnd();
         mv.visitLdcInsn(0);
         mv.visitFieldInsn(PUTSTATIC, className, "X", "I");
         mv.visitLdcInsn(0);
@@ -1059,7 +1061,7 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
         e0.visit(this, null);
         e1.visit(this, null);
         e2.visit(this, null);
-        mv.visitMethodInsn(INVOKESTATIC, PLPImage.className, "selectPixel", PLPImage.selectPixelSig, false);
+        mv.visitMethodInsn(INVOKEVIRTUAL, PLPImage.className, "selectPixel", PLPImage.selectPixelSig, false);
         return null;
 //        throw new UnsupportedOperationException("not yet implemented");
     }
