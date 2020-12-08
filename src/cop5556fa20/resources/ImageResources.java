@@ -5,7 +5,7 @@ public class ImageResources {
 	//fileImage0 should be a fully qualified file name of an image on your local file system.
 	public static final String fileImage0 = "/Users/tony/Desktop/Screen Shot 2020-11-06 at 16.21.42.png";
 	//fileImage1 should be a fully qualified file name of an image on your local file system.
-	public static final String fileImage1 = "";
+	public static final String fileImage1 = "/Users/tony/Desktop/Screen Shot 2020-10-30 at 11.22.56.png";
 	public static final String urlTower= 
 			"http://www.ufl.edu/media/newsufledu/images/generic/azaleas-and-tower.jpg";
 	public static final String urlKanapaha=

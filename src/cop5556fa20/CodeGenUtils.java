@@ -1,5 +1,6 @@
 package cop5556fa20;
 
+import cop5556fa20.runtime.PLPImage;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.util.TraceClassVisitor;
 
@@ -15,6 +16,13 @@ import java.lang.reflect.InvocationTargetException;
 
 
 public class CodeGenUtils{
+	static final boolean doPrint = true;
+	private static void show(Object input) {
+		if (doPrint) {
+			System.out.println(input.toString());
+		}
+	}
+
 	public final static String className = "cop5556fa20/CodeGenUtils";
 
 	public static String stringConcatenation(String string1, String string2) {
@@ -24,7 +32,8 @@ public class CodeGenUtils{
 	public static boolean stringComparison(String string1, String string2) {
 		return string1 == string2;
 	}
-	
+
+	public static boolean imageComparison(PLPImage img1, PLPImage img2) { return img1.equals(img2); }
 
 
 	/**

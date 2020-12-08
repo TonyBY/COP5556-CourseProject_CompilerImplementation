@@ -839,13 +839,44 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
                 case EQ -> {
                     e0.visit(this, arg);
                     e1.visit(this, arg);
-                    mv.visitJumpInsn(IF_ACMPEQ, setTrue);
+                    mv.visitMethodInsn(INVOKESTATIC, CodeGenUtils.className, "stringComparison",
+                            "(Ljava/lang/String;Ljava/lang/String;)Z", false);
+                    mv.visitLdcInsn(true);
+                    mv.visitJumpInsn(IF_ICMPEQ, setTrue);
+//                    mv.visitJumpInsn(IF_ACMPEQ, setTrue);
                     mv.visitLdcInsn(false);
                 }
                 case NEQ -> {
                     e0.visit(this, arg);
                     e1.visit(this, arg);
                     mv.visitJumpInsn(IF_ACMPNE, setTrue);
+                    mv.visitLdcInsn(false);
+                }
+
+                default-> throw new UnsupportedOperationException("not yet implemented");
+            }
+            mv.visitJumpInsn(GOTO, endEB);
+            mv.visitLabel(setTrue);
+            mv.visitLdcInsn(true);
+            mv.visitLabel(endEB);
+        } else if (type0 == Type.Image) {
+            switch (op) {
+                case EQ -> {
+                    e0.visit(this, arg);
+                    e1.visit(this, arg);
+                    mv.visitMethodInsn(INVOKESTATIC, CodeGenUtils.className, "imageComparison",
+                            "(Lcop5556fa20/runtime/PLPImage;Lcop5556fa20/runtime/PLPImage;)Z", false);
+                    mv.visitLdcInsn(true);
+                    mv.visitJumpInsn(IF_ICMPEQ, setTrue);
+                    mv.visitLdcInsn(false);
+                }
+                case NEQ -> {
+                    e0.visit(this, arg);
+                    e1.visit(this, arg);
+                    mv.visitMethodInsn(INVOKESTATIC, CodeGenUtils.className, "imageComparison",
+                            "(Lcop5556fa20/runtime/PLPImage;Lcop5556fa20/runtime/PLPImage;)Z", false);
+                    mv.visitLdcInsn(true);
+                    mv.visitJumpInsn(IF_ICMPNE, setTrue);
                     mv.visitLdcInsn(false);
                 }
 

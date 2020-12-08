@@ -169,7 +169,7 @@ public class PLPImage {
 		int h1 = other.image.getHeight();
 		if (w != w1 || h != h1) return false;
 		int[] pixels = image.getRGB(0, 0, w, h, null, 0, w);
-		int[] otherPixels = other.image.getRGB(0, 0, w, h, null, 0, w);
+		int[] otherPixels = other.image.getRGB(0, 0, w1, h1, null, 0, w1);
 		return Arrays.equals(pixels,otherPixels);
 	}        
         	

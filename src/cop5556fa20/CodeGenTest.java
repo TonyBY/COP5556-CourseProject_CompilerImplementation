@@ -42,7 +42,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CodeGenTest {
 
-    static boolean doPrint = true;
+    static boolean doPrint = false;
     static void show(Object s) {
         if (doPrint) {
             System.out.println(s);
@@ -690,6 +690,93 @@ class CodeGenTest {
         expectedLog.add(checkerboard);
         assertEquals(expectedLog, LoggedIO.globalLog);
         keepFrames();
+    }
+
+    @Test
+    public void failedTestCase0() throws Exception {
+        String input = """
+                image[500,600] b;
+                image[500,600] c = b;
+                """;
+        Exception exception = assertThrows(PLPImageException.class, () -> {
+            genRun(input);
+        });
+        show(exception);
+        keepFrames();
+    }
+
+    @Test
+    public void failedTestCase1() throws Exception {
+        String input = """
+                image a <- @0;
+                image b <- @1;
+                string isEqual = a==b ? "yes" : "no";
+                isEqual -> screen;
+                """;
+//        String input = """
+//                image a <- @0;
+//                image b <- @1;
+//                string isEqual = a==b ? "yes" : "no";
+//                b -> screen;
+//                """;
+        String[] args = {ImageResources.fileImage0, ImageResources.fileImage0};
+        genRun(input,args);
+//        keepFrames();
+        ArrayList<Object> expectedLog = new ArrayList<Object>();
+//        BufferedImage fetchedBufferedImageA = BufferedImageUtils.fetchBufferedImage(args[0]);
+//        BufferedImage fetchedBufferedImageB = BufferedImageUtils.fetchBufferedImage(args[1]);
+//        BufferedImage resizedFetchedBufferedImage = resizeBufferedImage(fetchedBufferedImage, 400, 500);
+//        PLPImage a = new PLPImage(fetchedBufferedImageA, null);
+//        PLPImage b = new PLPImage(fetchedBufferedImageB, null);
+//        expectedLog.add(a);
+//        expectedLog.add(b);
+        expectedLog.add("yes");
+        assertEquals(expectedLog, LoggedIO.globalLog);
+    }
+
+    @Test
+    public void failedTestCase2() throws Exception {
+        String input = """
+                image a <- @0;
+                image b <- @1;
+                string isEqual = a==b ? "yes" : "no";
+                isEqual -> screen;
+                """;
+        String[] args = {ImageResources.fileImage0, ImageResources.fileImage1};
+        genRun(input,args);
+        ArrayList<Object> expectedLog = new ArrayList<Object>();
+        expectedLog.add("no");
+        assertEquals(expectedLog, LoggedIO.globalLog);
+    }
+
+    @Test
+    public void failedTestCase3() throws Exception {
+        String input = """
+                image a <- @0;
+                image b <- @1;
+                string isEqual = a!=b ? "yes" : "no";
+                isEqual -> screen;
+                """;
+        String[] args = {ImageResources.fileImage0, ImageResources.fileImage0};
+        genRun(input,args);
+        ArrayList<Object> expectedLog = new ArrayList<Object>();
+        expectedLog.add("no");
+        assertEquals(expectedLog, LoggedIO.globalLog);
+    }
+
+    @Test
+    public void failedTestCase4() throws Exception {
+        String input = """
+                image a <- @0;
+                image b <- @1;
+                string isEqual = a!=b ? "yes" : "no";
+                isEqual -> screen;
+                """;
+        String[] args = {ImageResources.fileImage0, ImageResources.fileImage1};
+        genRun(input,args);
+        ArrayList<Object> expectedLog = new ArrayList<Object>();
+        expectedLog.add("yes");
+        assertEquals(expectedLog, LoggedIO.globalLog);
     }
 
     /*****************************  test cases from hw5 ******************************************/
