@@ -197,10 +197,15 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
                 Label setTrue_width = new Label();
                 Label setTrue_height = new Label();
                 Label endEB = new Label();
+
+                Label setTrue_img = new Label();
+
+                int line = e2.first().line();
+                int posInLine = e2.first().posInLine();
+                String message = "Cannot assign the image. Size doesn't match.";
+                String message_imgNull = "Cannot assign the image. RHS.image cannot be null.";
+
                 if (e0 != Expression.empty) {
-                    int line = e2.first().line();
-                    int posInLine = e2.first().posInLine();
-                    String message = "Cannot assign the image. Size doesn't match.";
                     e2.visit(this, null);
                     mv.visitLdcInsn(line);
                     mv.visitLdcInsn(posInLine);
@@ -223,10 +228,18 @@ public class CodeGenVisitorComplete implements ASTVisitor, Opcodes {
                     mv.visitLdcInsn(posInLine);
                     mv.visitLdcInsn(message);
                     mv.visitMethodInsn(INVOKESTATIC, PLPImage.className, "throwPLPImageException", PLPImage.throwPLPImageExceptionSig, false);
-
                     mv.visitLabel(setTrue_height);
                     mv.visitLabel(endEB);
                 }
+                e2.visit(this, null);
+                mv.visitFieldInsn(GETFIELD, PLPImage.className, "image", "Ljava/awt/image/BufferedImage;");
+                mv.visitJumpInsn(IFNONNULL, setTrue_img);
+                mv.visitLdcInsn(line);
+                mv.visitLdcInsn(posInLine);
+                mv.visitLdcInsn(message_imgNull);
+                mv.visitMethodInsn(INVOKESTATIC, PLPImage.className, "throwPLPImageException", PLPImage.throwPLPImageExceptionSig, false);
+
+                mv.visitLabel(setTrue_img);
                 e2.visit(this, null);
                 mv.visitFieldInsn(GETFIELD, PLPImage.className, "image", "Ljava/awt/image/BufferedImage;");
             }
